@@ -7,7 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { cn } from "@/lib/utils";
+import { cn, randomTailwindHexColor } from "@/lib/utils";
 import { ExpandIcon } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "../ui/button";
@@ -29,14 +29,15 @@ import { Separator } from "../ui/separator";
 //   { month: "June", desktop: 214, mobile: 140 },
 // ];
 
-const chartConfig = {
-  dividend: {
-    label: "Dividend (%)",
-    color: "#2563eb",
-  },
-} satisfies ChartConfig;
-
 const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
+  const chartConfig = {
+    dividend: {
+      label: "Dividend (%)",
+      color: randomTailwindHexColor(),
+    },
+  } satisfies ChartConfig;
+
+  // console.log(randomTailwindHexColor(), "CHECK");
   if (chartData.length === 0) return <></>;
   return (
     <div
@@ -82,8 +83,8 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
                 <ChartLegend content={<ChartLegendContent />} />
                 <Bar
                   dataKey="dividend"
-                  fill="var(--color-dividend)"
                   radius={4}
+                  fill={randomTailwindHexColor()}
                 />
               </BarChart>
             </ChartContainer>

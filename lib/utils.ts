@@ -74,3 +74,51 @@ export const formatDateTime = (isoString: string): string => {
     day
   )} ${month} ${year}, ${hours12}:${minutes}${ampm}`;
 };
+
+export const randomTailwindColor = ({
+  prefix = "bg",
+}: {
+  prefix?: string;
+}): string => {
+  const colors = [
+    "gray",
+    "red",
+    "yellow",
+    "green",
+    "blue",
+    "indigo",
+    "purple",
+    "pink",
+  ];
+  const range = { min: 1, max: 9 };
+  const prfx = prefix;
+
+  const random = (min: number, max: number): number =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const shade = random(range.min, range.max) * 100;
+  const color = colors[random(0, colors.length - 1)];
+
+  return `!${prfx}-${color}-${shade}`;
+};
+
+export function randomTailwindHexColor(): string {
+  const tailwindColors = {
+    // red: ["#f87171", "#ef4444", "#dc2626", "#b91c1c"],
+    // yellow: ["#facc15", "#eab308", "#ca8a04", "#a16207"],
+    green: ["#4ade80", "#22c55e", "#16a34a", "#15803d"],
+    // blue: ["#60a5fa", "#3b82f6", "#2563eb", "#1d4ed8"],
+    // purple: ["#c084fc", "#a855f7", "#9333ea", "#7e22ce"],
+    // pink: ["#f472b6", "#ec4899", "#db2777", "#be185d"],
+  };
+
+  const colors = Object.keys(tailwindColors) as (keyof typeof tailwindColors)[];
+
+  const random = <T>(arr: T[]): T =>
+    arr[Math.floor(Math.random() * arr.length)];
+
+  const color = random(colors);
+  const shade = random(tailwindColors[color]);
+
+  return shade; // Hex color code
+}
