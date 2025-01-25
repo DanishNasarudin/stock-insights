@@ -7,8 +7,16 @@ import { google } from "googleapis";
 
 type SheetData = [string, string | number][];
 
+type DividendDataType = {
+  year: string;
+  dividend: number;
+};
+
 type GetSheetDataResponse = ResponseType & {
-  data?: SheetData;
+  data?: {
+    values: DividendDataType[];
+    label: string;
+  };
 };
 
 export async function getSheetData(): Promise<GetSheetDataResponse> {
@@ -20,9 +28,23 @@ export async function getSheetData(): Promise<GetSheetDataResponse> {
       range: "A1:B28",
     });
 
-    const finalData = data.data.values as SheetData;
+    const dataValues = data.data.values as SheetData;
 
-    return { success: true, data: finalData };
+    const processData =
+      dataValues &&
+      dataValues.slice(1).map(([year, dividend]) => {
+        return {
+          year: year as string,
+          dividend: parseFloat(dividend as string),
+        };
+      });
+
+    const sheetLabel = data.data.range?.split("!")[0];
+
+    return {
+      success: true,
+      data: { values: processData, label: sheetLabel || "Undefined" },
+    };
   } catch (error) {
     return handleTryCatchError(error, "@getSheetData");
   }
