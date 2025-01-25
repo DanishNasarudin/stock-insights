@@ -7,43 +7,48 @@ import { google } from "googleapis";
 
 type SheetData = [string, string | number][];
 
-type DividendDataType = {
-  year: string;
-  dividend: number;
+export type DividendDataType = {
+  year: string | null;
+  dividend: number | null;
 };
 
 type GetSheetDataResponse = ResponseType & {
   data?: {
     values: DividendDataType[];
     label: string;
-  };
+  }[];
 };
 
 export async function getSheetData(): Promise<GetSheetDataResponse> {
   try {
     const googleSheets = google.sheets({ version: "v4", auth: googleAuth });
 
-    const data = await googleSheets.spreadsheets.values.get({
+    const response = await googleSheets.spreadsheets.get({
       spreadsheetId: "1PQ7ZDnKKtXKuIRQo-NrZlyvsMxxA7fq-6Od9UOkGruU",
-      range: "A1:B28",
+      includeGridData: true,
     });
 
-    const dataValues = data.data.values as SheetData;
+    const data = response.data.sheets?.flatMap((sheet) => {
+      const label = sheet.properties?.title || "Unknown Sheet";
+      const rows = sheet.data?.[0]?.rowData || [];
 
-    const processData =
-      dataValues &&
-      dataValues.slice(1).map(([year, dividend]) => {
-        return {
-          year: year as string,
-          dividend: parseFloat(dividend as string),
-        };
-      });
+      const values = rows
+        .slice(1)
+        .filter((row) => row.values?.[0]?.formattedValue)
+        .map((row) => {
+          return {
+            year: row.values?.[0]?.formattedValue || null,
+            dividend:
+              parseFloat(row.values?.[1]?.formattedValue as string) || null,
+          };
+        });
 
-    const sheetLabel = data.data.range?.split("!")[0];
+      return { label, values };
+    });
 
     return {
       success: true,
-      data: { values: processData, label: sheetLabel || "Undefined" },
+      data: data,
     };
   } catch (error) {
     return handleTryCatchError(error, "@getSheetData");
