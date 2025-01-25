@@ -6,6 +6,8 @@ import { DividendDataType, getSheetData } from "@/services/google-sheet";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
 
+export const revalidate = 60;
+
 export default async function Home({
   searchParams,
 }: {
