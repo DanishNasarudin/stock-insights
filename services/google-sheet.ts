@@ -24,7 +24,7 @@ export async function getSheetData(): Promise<GetSheetDataResponse> {
     const googleSheets = google.sheets({ version: "v4", auth: googleAuth });
 
     const response = await googleSheets.spreadsheets.get({
-      spreadsheetId: "1PQ7ZDnKKtXKuIRQo-NrZlyvsMxxA7fq-6Od9UOkGruU",
+      spreadsheetId: process.env.GOOGLE_SHEET_URL,
       includeGridData: true,
     });
 
