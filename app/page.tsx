@@ -58,6 +58,7 @@ export default async function Home({
           Malaysia's Stock Dividend Tracker
         </span>
         <Inputs />
+        {searchTerm}
       </div>
       <Suspense fallback={<Loading />}>
         {groupedCharts.length > 0 ? (
