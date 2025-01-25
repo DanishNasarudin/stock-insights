@@ -54,7 +54,7 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
               <ExpandIcon />
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="rounded-md">
             <DialogHeader>
               <DialogTitle>{label}</DialogTitle>
             </DialogHeader>

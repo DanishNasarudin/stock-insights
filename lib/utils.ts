@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { ReadonlyURLSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
@@ -32,4 +33,14 @@ export const handleToastError = (
   } else {
     toast.error(errorMsg);
   }
+};
+
+export const createURL = (
+  pathname: string,
+  params: URLSearchParams | ReadonlyURLSearchParams
+) => {
+  const paramString = params.toString();
+  const queryString = `${paramString.length ? `?` : ""}${paramString}`;
+
+  return `${pathname}${queryString}`;
 };
