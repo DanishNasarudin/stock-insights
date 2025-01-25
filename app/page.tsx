@@ -30,9 +30,7 @@ export default async function Home({
 
   const filterData = searchTerm
     ? data
-      ? data.filter((item) =>
-          item.label.toLocaleLowerCase().includes(searchTerm)
-        )
+      ? data.filter((item) => item.label.toLowerCase().includes(searchTerm))
       : data
     : data;
 
@@ -58,8 +56,6 @@ export default async function Home({
           Malaysia's Stock Dividend Tracker
         </span>
         <Inputs />
-        {searchTerm} {`${"KPF".toLocaleLowerCase().includes(searchTerm!)}`}
-        {JSON.stringify(filterData?.slice(0, 1))}
       </div>
       <Suspense fallback={<Loading />}>
         {groupedCharts.length > 0 ? (
