@@ -30,7 +30,9 @@ export default async function Home({
 
   const filterData = searchTerm
     ? data
-      ? data.filter((item) => item.label.toLowerCase().includes(searchTerm))
+      ? data.filter((item) =>
+          item.label.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       : data
     : data;
 
