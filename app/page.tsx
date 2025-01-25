@@ -58,7 +58,8 @@ export default async function Home({
           Malaysia's Stock Dividend Tracker
         </span>
         <Inputs />
-        {searchTerm}
+        {searchTerm} {`${"KPF".toLocaleLowerCase().includes(searchTerm!)}`}
+        {JSON.stringify(filterData?.slice(0, 1))}
       </div>
       <Suspense fallback={<Loading />}>
         {groupedCharts.length > 0 ? (
