@@ -5,8 +5,10 @@ import { handleTryCatchError } from "@/lib/utils";
 import { ResponseType } from "@/types/response";
 import { google } from "googleapis";
 
+type SheetData = [string, string | number][];
+
 type GetSheetDataResponse = ResponseType & {
-  data?: any;
+  data?: SheetData;
 };
 
 export async function getSheetData(): Promise<GetSheetDataResponse> {
@@ -18,7 +20,9 @@ export async function getSheetData(): Promise<GetSheetDataResponse> {
       range: "A1:B28",
     });
 
-    return { success: true, data: data.data.values };
+    const finalData = data.data.values as SheetData;
+
+    return { success: true, data: finalData };
   } catch (error) {
     return handleTryCatchError(error, "@getSheetData");
   }
