@@ -53,7 +53,7 @@ export default async function Home({
     : [];
 
   return (
-    <div className="flex flex-col gap-4 p-4 w-full md:max-w-[80vw] mx-auto">
+    <div className="flex flex-col gap-4 p-4 w-full md:max-w-[80vw] mx-auto h-full">
       <div className="py-4 space-y-2">
         <span className="text-lg font-bold">
           Malaysia's Stock Dividend Tracker

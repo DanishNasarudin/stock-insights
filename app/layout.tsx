@@ -58,7 +58,7 @@ export default function RootLayout({
         <Providers>
           <nav className="p-4 bg-gradient-to-r from-blue-950 to-blue-900 border-b-border border-b-[1px] flex justify-between items-center">
             <Link href={"/"}>
-              <Button variant={"ghost"} className="hover:bg-transparent">
+              <Button variant={"ghost"} className="hover:bg-transparent p-0">
                 <Image
                   src={icon.src}
                   width={icon.width}

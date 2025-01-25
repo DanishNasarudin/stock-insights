@@ -42,9 +42,9 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col gap-4",
+        "w-full flex flex-col gap-4 justify-between",
         "p-4 border-border border-[1px] rounded-lg",
-        "max-w- max-h-min"
+        ""
       )}
     >
       <div className="flex justify-between">
@@ -55,7 +55,7 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
               <ExpandIcon />
             </Button>
           </DialogTrigger>
-          <DialogContent className="rounded-md">
+          <DialogContent className="rounded-lg">
             <DialogHeader>
               <DialogTitle>{label}</DialogTitle>
             </DialogHeader>
