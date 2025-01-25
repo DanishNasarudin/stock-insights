@@ -2,11 +2,10 @@ import Chart from "@/components/custom/Chart";
 import Inputs from "@/components/custom/Inputs";
 import Loading from "@/components/custom/Loading";
 import Placeholder from "@/components/custom/Placeholder";
+import { formatDateTime } from "@/lib/utils";
 import { DividendDataType, getSheetData } from "@/services/google-sheet";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
-
-export const revalidate = 60;
 
 export default async function Home({
   searchParams,
@@ -14,7 +13,7 @@ export default async function Home({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { search } = await searchParams;
-  const { data, success } = await getSheetData();
+  const { data, success, updatedAt } = await getSheetData();
 
   const searchTerm = Array.isArray(search) ? search[0] : search;
 
@@ -60,6 +59,9 @@ export default async function Home({
           Malaysia's Stock Dividend Tracker
         </span>
         <Inputs />
+        <p className="text-xs text-secondary-foreground/60">
+          Data last updated: {formatDateTime(updatedAt!)}
+        </p>
       </div>
       <Suspense fallback={<Loading />}>
         {groupedCharts.length > 0 ? (

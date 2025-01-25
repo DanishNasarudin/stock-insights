@@ -44,3 +44,33 @@ export const createURL = (
 
   return `${pathname}${queryString}`;
 };
+
+export const formatDateTime = (isoString: string): string => {
+  const date = new Date(isoString);
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  const daySuffix = (d: number): string => {
+    if (d > 3 && d < 21) return "th";
+    switch (d % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const hours24 = date.getHours();
+  const hours12 = hours24 % 12 || 12; // Convert 24-hour time to 12-hour
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours24 >= 12 ? "pm" : "am";
+
+  return `${day}${daySuffix(
+    day
+  )} ${month} ${year}, ${hours12}:${minutes}${ampm}`;
+};
