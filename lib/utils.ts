@@ -47,9 +47,14 @@ export const createURL = (
 
 export const formatDateTime = (isoString: string): string => {
   const date = new Date(isoString);
-  const day = date.getDate();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const year = date.getFullYear();
+  const gmt8Date = new Date(
+    date.toLocaleString("en-US", { timeZone: "Asia/Singapore" })
+  );
+  const day = gmt8Date.getDate();
+  const month = gmt8Date.toLocaleString("en-US", {
+    month: "short",
+  });
+  const year = gmt8Date.getFullYear();
 
   const daySuffix = (d: number): string => {
     if (d > 3 && d < 21) return "th";
@@ -65,9 +70,9 @@ export const formatDateTime = (isoString: string): string => {
     }
   };
 
-  const hours24 = date.getHours();
+  const hours24 = gmt8Date.getHours();
   const hours12 = hours24 % 12 || 12; // Convert 24-hour time to 12-hour
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const minutes = gmt8Date.getMinutes().toString().padStart(2, "0");
   const ampm = hours24 >= 12 ? "pm" : "am";
 
   return `${day}${daySuffix(

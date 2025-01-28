@@ -65,6 +65,10 @@ export const getSheetDataCache = unstable_cache(
   }
 );
 
+/**
+ * Getting all available data from google sheet
+ * @returns data: { values, label }, updatedAt
+ */
 export async function getSheetData(): Promise<GetSheetDataResponse> {
   try {
     const googleSheets = google.sheets({ version: "v4", auth: googleAuth });
@@ -74,23 +78,25 @@ export async function getSheetData(): Promise<GetSheetDataResponse> {
       includeGridData: true,
     });
 
-    const data = response.data.sheets?.flatMap((sheet) => {
-      const label = sheet.properties?.title || "Unknown Sheet";
-      const rows = sheet.data?.[0]?.rowData || [];
+    const data = response.data.sheets
+      ?.flatMap((sheet) => {
+        const label = sheet.properties?.title || "Unknown Sheet";
+        const rows = sheet.data?.[0]?.rowData || [];
 
-      const values = rows
-        .slice(1)
-        .filter((row) => row.values?.[0]?.formattedValue)
-        .map((row) => {
-          return {
-            year: row.values?.[0]?.formattedValue || null,
-            dividend:
-              parseFloat(row.values?.[1]?.formattedValue as string) || null,
-          };
-        });
+        const values = rows
+          .slice(1)
+          .filter((row) => row.values?.[0]?.formattedValue)
+          .map((row) => {
+            return {
+              year: row.values?.[0]?.formattedValue || null,
+              dividend:
+                parseFloat(row.values?.[1]?.formattedValue as string) || null,
+            };
+          });
 
-      return { label, values };
-    });
+        return { label, values };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
 
     return {
       success: true,
