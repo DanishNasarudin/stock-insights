@@ -9,9 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-type Props = {};
-
-export default function ThemeButton({}: Props) {
+export default function ThemeButton() {
   const { setTheme } = useTheme();
 
   return (

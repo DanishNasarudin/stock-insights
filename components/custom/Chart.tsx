@@ -22,7 +22,7 @@ import {
 } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 
-const Chart = ({
+export default function Chart({
   chartData,
   label,
   valueName,
@@ -32,7 +32,7 @@ const Chart = ({
   label: string;
   valueName: string;
   valueType: string;
-}) => {
+}) {
   // console.log(chartData.slice(-5), label, "CHECK");
   const dividendTrend = getDividendTrend(chartData.slice(-11));
 
@@ -127,9 +127,7 @@ const Chart = ({
       </ChartContainer>
     </div>
   );
-};
-
-export default Chart;
+}
 
 type Trend = "up" | "down" | "constant";
 

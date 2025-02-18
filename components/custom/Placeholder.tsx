@@ -13,7 +13,7 @@ type Props = {
   subtitleClassName?: string;
 };
 
-const Placeholder = (props: Props) => {
+export default function Placeholder(props: Props) {
   return (
     <div
       className={cn(
@@ -45,6 +45,4 @@ const Placeholder = (props: Props) => {
       </div>
     </div>
   );
-};
-
-export default Placeholder;
+}

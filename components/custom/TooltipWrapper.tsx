@@ -7,16 +7,16 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 
-const TooltipWrapper = ({
+export default function TooltipWrapper({
   children,
   content,
 }: {
   children: React.ReactNode;
   content: string;
-}) => {
+}) {
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={400}>
+      <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent
           className={cn(
@@ -29,6 +29,4 @@ const TooltipWrapper = ({
       </Tooltip>
     </TooltipProvider>
   );
-};
-
-export default TooltipWrapper;
+}

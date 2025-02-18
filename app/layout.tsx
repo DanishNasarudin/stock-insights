@@ -1,11 +1,8 @@
-import ThemeButton from "@/components/custom/ThemeButton";
-import { Button } from "@/components/ui/button";
+import Navbar from "@/components/custom/Navbar";
 import Providers from "@/lib/providers/Providers";
 import icon from "@/public/logo.png";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Image from "next/image";
-import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -56,21 +53,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col`}
       >
         <Providers>
-          <nav className="p-4 bg-gradient-to-r from-blue-950 to-blue-900 border-b-border border-b-[1px] flex justify-between items-center">
-            <Link href={"/"}>
-              <Button variant={"ghost"} className="hover:bg-transparent p-0">
-                <Image
-                  src={icon.src}
-                  width={icon.width}
-                  height={icon.height}
-                  alt="EasyDivMy Logo"
-                  className="w-8"
-                />
-                <span className="text-lg font-black text-white">EasyDivMy</span>
-              </Button>
-            </Link>
-            <ThemeButton />
-          </nav>
+          <Navbar />
           <main className="flex-1">{children}</main>
           <section className="h-[30%] flex-none"></section>
           <footer className="min-h-min w-full flex justify-center py-1 bg-background border-t-border border-t-[1px] text-xs text-secondary-foreground/60">

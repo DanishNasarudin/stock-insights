@@ -1,6 +1,6 @@
 import { Loader2Icon } from "lucide-react";
 
-const Loading = ({ content }: { content?: string }) => {
+export default function Loading({ content }: { content?: string }) {
   const development = process.env.NODE_ENV !== "production";
   return (
     <div className="flex h-full w-full items-center justify-center flex-col">
@@ -8,6 +8,4 @@ const Loading = ({ content }: { content?: string }) => {
       <Loader2Icon size={30} className="animate-spin stroke-primary" />
     </div>
   );
-};
-
-export default Loading;
+}
