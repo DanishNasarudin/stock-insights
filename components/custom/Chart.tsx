@@ -8,32 +8,43 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { cn, randomTailwindHexColor } from "@/lib/utils";
+import { DividendDataType } from "@/services/google-sheet";
 import { ExpandIcon } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 
-// const chartData = [
-//   { month: "January", desktop: 186, mobile: 80 },
-//   { month: "February", desktop: 305, mobile: 200 },
-//   { month: "March", desktop: 237, mobile: 120 },
-//   { month: "April", desktop: 73, mobile: 190 },
-//   { month: "May", desktop: 209, mobile: 130 },
-//   { month: "June", desktop: 214, mobile: 140 },
-// ];
+const Chart = ({
+  chartData,
+  label,
+  valueName,
+  valueType,
+}: {
+  chartData: DividendDataType[];
+  label: string;
+  valueName: string;
+  valueType: string;
+}) => {
+  // console.log(chartData.slice(-5), label, "CHECK");
+  const dividendTrend = getDividendTrend(chartData.slice(-11));
 
-const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
+  const colorTrend =
+    dividendTrend === "insufficient data"
+      ? randomTailwindHexColor()
+      : getColorTrend(dividendTrend);
+
   const chartConfig = {
     dividend: {
-      label: "Dividend (%)",
-      color: randomTailwindHexColor(),
+      label: `${valueName} (${valueType})`,
+      color: colorTrend,
     },
   } satisfies ChartConfig;
 
@@ -49,7 +60,7 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
     >
       <div className="flex justify-between">
         <span className="text-lg">{label}</span>
-        <Dialog>
+        <Dialog aria-describedby="Details">
           <DialogTrigger asChild>
             <Button variant={"outline"} size={"icon"}>
               <ExpandIcon />
@@ -58,6 +69,7 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
           <DialogContent className="rounded-lg">
             <DialogHeader>
               <DialogTitle>{label}</DialogTitle>
+              <DialogDescription />
             </DialogHeader>
             <Separator />
             <ChartContainer
@@ -84,7 +96,7 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
                 <Bar
                   dataKey="dividend"
                   radius={4}
-                  fill={randomTailwindHexColor()}
+                  fill="var(--color-dividend)"
                 />
               </BarChart>
             </ChartContainer>
@@ -101,33 +113,74 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
             axisLine={false}
           />
           <YAxis tickLine={false} axisLine={false} label={"%"} />
-          <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                indicator="line"
+                className="backdrop-filter backdrop-blur-sm bg-background/60"
+              />
+            }
+          />
           <ChartLegend content={<ChartLegendContent />} />
           <Bar dataKey="dividend" fill="var(--color-dividend)" radius={4} />
         </BarChart>
-        {/* <AreaChart
-      accessibilityLayer
-      data={chartData}
-      margin={{
-        left: -20,
-        right: 12,
-        top: 20,
-      }}
-    >
-      <CartesianGrid vertical={false} />
-      <XAxis dataKey="year" axisLine={false} tickMargin={8} />
-      <YAxis tickLine={false} axisLine={false} tickMargin={8} tickCount={3} />
-      <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-      <Area
-        dataKey="dividend"
-        type="natural"
-        fill="var(--color-dividend)"
-        fillOpacity={0.4}
-        stroke="var(--color-dividend)"
-        stackId="a"
-      />
-    </AreaChart> */}
-        {/* <LineChart
+      </ChartContainer>
+    </div>
+  );
+};
+
+export default Chart;
+
+type Trend = "up" | "down" | "constant";
+
+const getDividendTrend = (
+  dividends: DividendDataType[]
+): Trend | "insufficient data" => {
+  const validDividends = dividends
+    .map((d) => d.dividend)
+    .filter((d): d is number => d !== null);
+
+  if (validDividends.length < 2) return "insufficient data";
+
+  const firstHalfAvg =
+    validDividends
+      .slice(0, Math.floor(validDividends.length / 2))
+      .reduce((sum, val) => sum + val, 0) /
+    (validDividends.length / 2);
+
+  const secondHalfAvg =
+    validDividends
+      .slice(Math.floor(validDividends.length / 2))
+      .reduce((sum, val) => sum + val, 0) /
+    (validDividends.length / 2);
+
+  if (secondHalfAvg > firstHalfAvg) return "up";
+  if (secondHalfAvg < firstHalfAvg) return "down";
+  return "constant";
+};
+
+const getColorTrend = (trend: Trend): string => {
+  switch (trend) {
+    case "up":
+      return "#4ade80";
+    case "down":
+      return "#f87171";
+    default:
+      return randomTailwindHexColor();
+  }
+};
+
+// const chartData = [
+//   { month: "January", desktop: 186, mobile: 80 },
+//   { month: "February", desktop: 305, mobile: 200 },
+//   { month: "March", desktop: 237, mobile: 120 },
+//   { month: "April", desktop: 73, mobile: 190 },
+//   { month: "May", desktop: 209, mobile: 130 },
+//   { month: "June", desktop: 214, mobile: 140 },
+// ];
+
+{
+  /* <LineChart
       accessibilityLayer
       data={chartData}
       margin={{
@@ -155,10 +208,30 @@ const Chart = ({ chartData, label }: { chartData: any[]; label: string }) => {
           r: 6,
         }}
       />
-    </LineChart> */}
-      </ChartContainer>
-    </div>
-  );
-};
+    </LineChart>  */
+}
 
-export default Chart;
+{
+  /* <AreaChart
+      accessibilityLayer
+      data={chartData}
+      margin={{
+        left: -20,
+        right: 12,
+        top: 20,
+      }}
+    >
+      <CartesianGrid vertical={false} />
+      <XAxis dataKey="year" axisLine={false} tickMargin={8} />
+      <YAxis tickLine={false} axisLine={false} tickMargin={8} tickCount={3} />
+      <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+      <Area
+        dataKey="dividend"
+        type="natural"
+        fill="var(--color-dividend)"
+        fillOpacity={0.4}
+        stroke="var(--color-dividend)"
+        stackId="a"
+      />
+    </AreaChart> */
+}

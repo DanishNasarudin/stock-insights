@@ -44,7 +44,12 @@ export default async function Home({
   const groupedCharts = filterData
     ? filterData.reduce(
         (
-          acc: { values: DividendDataType[]; label: string }[][],
+          acc: {
+            values: DividendDataType[];
+            label: string;
+            valueName: string;
+            valueType: string;
+          }[][],
           item,
           index
         ) => {
@@ -76,6 +81,8 @@ export default async function Home({
                   key={`${rowIndex}-${chartIndex}`}
                   chartData={item.values}
                   label={item.label!}
+                  valueName={item.valueName}
+                  valueType={item.valueType}
                 />
               ))}
             </div>
