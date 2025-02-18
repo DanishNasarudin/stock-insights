@@ -2,10 +2,14 @@
 
 import { googleAuth } from "@/lib/google-client";
 import { handleTryCatchError } from "@/lib/utils";
-import { ResponseType } from "@/types/response";
 import { google } from "googleapis";
 
 type SheetData = [string, string | number][];
+
+export type ResponseType = {
+  success: boolean;
+  error?: string;
+};
 
 export type DividendDataType = {
   year: string | null;

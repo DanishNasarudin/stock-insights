@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ticker {
+  id     Int    @id @default(autoincrement())
+  ticker String @db.VarChar(255)
+
+  comments       Comment[]
+  tickerLikes    TickerLike[]
+  tickerDislikes TickerDislike[]
+  shares         Int             @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  likes    Int @default(0)
+  dislikes Int @default(0)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  tickerId Int
+  ticker   Ticker @relation(fields: [tickerId], references: [id], onDelete: Cascade)
+
+  parentId Int?
+  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentToComment")
+
+  commentLikes    CommentLike[]
+  commentDislikes CommentDislike[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String @id
+  name      String
+  avatarSrc String
+
+  comments        Comment[]
+  tickerLikes     TickerLike[]
+  tickerDislikes  TickerDislike[]
+  commentLikes    CommentLike[]
+  commentDislikes CommentDislike[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TickerLike {
+  tickerId Int
+  userId   String
+
+  ticker Ticker @relation(fields: [tickerId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([tickerId, userId])
+}
+
+model TickerDislike {
+  tickerId Int
+  userId   String
+
+  ticker Ticker @relation(fields: [tickerId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([tickerId, userId])
+}
+
+model CommentLike {
+  commentId Int
+  userId    String
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId])
+}
+
+model CommentDislike {
+  commentId Int
+  userId    String
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId])
+}

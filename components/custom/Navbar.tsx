@@ -7,9 +7,12 @@ import ThemeButton from "./ThemeButton";
 
 export default function Navbar() {
   return (
-    <nav className="p-4 bg-gradient-to-r from-blue-950 to-blue-900 border-b-border border-b-[1px] flex justify-between items-center">
+    <nav className="p-4 bg-gradient-to-r from-blue-950 to-blue-900 border-b-border border-b-[1px] flex justify-between items-center align-middle">
       <Link href={"/"}>
-        <Button variant={"ghost"} className="hover:bg-transparent p-0">
+        <Button
+          variant={"ghost"}
+          className="hover:bg-transparent p-0 align-middle"
+        >
           <Image
             src={icon.src}
             width={icon.width}
