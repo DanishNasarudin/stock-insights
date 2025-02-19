@@ -1,8 +1,10 @@
 "use server";
 
 import { googleAuth } from "@/lib/google-client";
+import prisma from "@/lib/prisma";
 import { handleTryCatchError } from "@/lib/utils";
 import { google } from "googleapis";
+import { createTicker } from "./ticker";
 
 type SheetData = [string, string | number][];
 
@@ -16,13 +18,15 @@ export type DividendDataType = {
   dividend: number | null;
 };
 
+export type SheetDataType = {
+  values: DividendDataType[];
+  label: string;
+  valueName: string;
+  valueType: string;
+};
+
 type GetSheetDataResponse = ResponseType & {
-  data?: {
-    values: DividendDataType[];
-    label: string;
-    valueName: string;
-    valueType: string;
-  }[];
+  data?: SheetDataType[];
   updatedAt?: string;
 };
 
@@ -74,4 +78,39 @@ export async function getSheetData(): Promise<GetSheetDataResponse> {
   } catch (error) {
     return handleTryCatchError(error, "@getSheetData");
   }
+}
+
+export async function syncGoogleSheetTickers(): Promise<{
+  created: number;
+  existing: number;
+}> {
+  const { data, success } = await getSheetData();
+
+  if (!success || !data) {
+    throw new Error("Failed to retrieve Google Sheet data");
+  }
+
+  // Get existing ticker labels from the database (case-insensitive)
+  const existingTickers = await prisma.ticker.findMany({
+    select: { ticker: true },
+  });
+  const existingTickerSet = new Set(
+    existingTickers.map((ticker) => ticker.ticker.toLowerCase())
+  );
+
+  let created = 0;
+  let existing = 0;
+
+  // Iterate over each ticker from the Google Sheet data
+  for (const sheetTicker of data) {
+    const tickerLabel = sheetTicker.label;
+    if (!existingTickerSet.has(tickerLabel.toLowerCase())) {
+      await createTicker({ ticker: tickerLabel });
+      created++;
+    } else {
+      existing++;
+    }
+  }
+
+  return { created, existing };
 }

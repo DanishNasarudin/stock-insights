@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Ticker, TickerDislike, TickerLike } from "@prisma/client";
+import { Prisma, Ticker, TickerDislike, TickerLike } from "@prisma/client";
 
 export async function createTicker(data: {
   ticker: string;
@@ -13,9 +13,28 @@ export async function createTicker(data: {
   });
 }
 
-export async function getTickerById(id: number): Promise<Ticker | null> {
+export type TickerWithCommetsAndLikesAndDislikes = Prisma.TickerGetPayload<{
+  include: { comments: true; tickerLikes: true; tickerDislikes: true };
+}>;
+
+export async function getTickerById(
+  id: number
+): Promise<TickerWithCommetsAndLikesAndDislikes | null> {
   return await prisma.ticker.findUnique({
     where: { id },
+    include: {
+      comments: true,
+      tickerLikes: true,
+      tickerDislikes: true,
+    },
+  });
+}
+
+export async function getTickerByName(
+  name: string
+): Promise<TickerWithCommetsAndLikesAndDislikes | null> {
+  return await prisma.ticker.findUnique({
+    where: { ticker: name },
     include: {
       comments: true,
       tickerLikes: true,

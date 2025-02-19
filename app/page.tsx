@@ -3,13 +3,27 @@ import Inputs from "@/components/custom/Inputs";
 import Loading from "@/components/custom/Loading";
 import Placeholder from "@/components/custom/Placeholder";
 import { formatDateTime } from "@/lib/utils";
-import { DividendDataType, getSheetData } from "@/services/google-sheet";
+import {
+  DividendDataType,
+  getSheetData,
+  SheetDataType,
+  syncGoogleSheetTickers,
+} from "@/services/google-sheet";
+import { getTickerByName } from "@/services/ticker";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
 
 export const revalidate = 120;
 export const dynamic = "force-static";
 export const dynamicParams = true;
+
+export type TickerDataType = SheetDataType & {
+  likes: number;
+  dislikes: number;
+  shares: number;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default async function Home({
   searchParams,
@@ -18,6 +32,7 @@ export default async function Home({
 }) {
   const { search } = await searchParams;
   const { data, success, updatedAt } = await getSheetData();
+  syncGoogleSheetTickers();
 
   const searchTerm = Array.isArray(search) ? search[0] : search;
 
@@ -41,14 +56,46 @@ export default async function Home({
       : data
     : data;
 
-  const groupedCharts = filterData
-    ? filterData.reduce(
+  const tickerDetails: Promise<TickerDataType[]> | undefined = filterData
+    ? Promise.all(
+        filterData.map(async (item): Promise<TickerDataType> => {
+          const dataTicker = await getTickerByName(item.label);
+          if (!dataTicker) {
+            return {
+              ...item,
+              likes: 0,
+              dislikes: 0,
+              shares: 0,
+              createdAt: "",
+              updatedAt: "",
+            };
+          }
+
+          return {
+            ...item,
+            likes: dataTicker.tickerLikes.length,
+            dislikes: dataTicker.tickerDislikes.length,
+            shares: dataTicker.shares,
+            createdAt: dataTicker.createdAt.toISOString(),
+            updatedAt: dataTicker.updatedAt.toISOString(),
+          };
+        })
+      )
+    : undefined;
+
+  const groupedCharts = tickerDetails
+    ? (await tickerDetails).reduce(
         (
           acc: {
             values: DividendDataType[];
             label: string;
             valueName: string;
             valueType: string;
+            likes: number;
+            dislikes: number;
+            shares: number;
+            createdAt: string;
+            updatedAt: string;
           }[][],
           item,
           index
@@ -77,13 +124,7 @@ export default async function Home({
           groupedCharts.map((row, rowIndex) => (
             <div key={rowIndex} className="flex sm:flex-row flex-col gap-4">
               {row.map((item, chartIndex) => (
-                <Chart
-                  key={`${rowIndex}-${chartIndex}`}
-                  chartData={item.values}
-                  label={item.label!}
-                  valueName={item.valueName}
-                  valueType={item.valueType}
-                />
+                <Chart key={`${rowIndex}-${chartIndex}`} data={item} />
               ))}
             </div>
           ))

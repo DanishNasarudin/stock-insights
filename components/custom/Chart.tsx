@@ -1,4 +1,5 @@
 "use client";
+import { TickerDataType } from "@/app/page";
 import {
   ChartConfig,
   ChartContainer,
@@ -23,18 +24,13 @@ import {
 import { Separator } from "../ui/separator";
 
 export default function Chart({
-  chartData,
-  label,
-  valueName,
-  valueType,
+  data = {} as TickerDataType,
 }: {
-  chartData: DividendDataType[];
-  label: string;
-  valueName: string;
-  valueType: string;
+  data: TickerDataType;
 }) {
   // console.log(chartData.slice(-5), label, "CHECK");
-  const dividendTrend = getDividendTrend(chartData.slice(-11));
+  const { values, label, valueName, valueType } = data;
+  const dividendTrend = getDividendTrend(values.slice(-11));
 
   const colorTrend =
     dividendTrend === "insufficient data"
@@ -49,7 +45,7 @@ export default function Chart({
   } satisfies ChartConfig;
 
   // console.log(randomTailwindHexColor(), "CHECK");
-  if (chartData.length === 0) return <></>;
+  if (values.length === 0) return <></>;
   return (
     <div
       className={cn(
@@ -76,11 +72,7 @@ export default function Chart({
               config={chartConfig}
               className="min-h-[100px] w-full mt-4"
             >
-              <BarChart
-                accessibilityLayer
-                data={chartData}
-                margin={{ left: -24 }}
-              >
+              <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="year"
@@ -104,7 +96,7 @@ export default function Chart({
         </Dialog>
       </div>
       <ChartContainer config={chartConfig} className="min-h-[100px] w-full">
-        <BarChart accessibilityLayer data={chartData} margin={{ left: -24 }}>
+        <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="year"
