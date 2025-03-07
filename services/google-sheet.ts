@@ -95,7 +95,7 @@ export async function syncGoogleSheetTickers(): Promise<{
     select: { ticker: true },
   });
   const existingTickerSet = new Set(
-    existingTickers.map((ticker) => ticker.ticker.toLowerCase())
+    existingTickers.map((ticker) => ticker.ticker)
   );
 
   let created = 0;
@@ -104,9 +104,9 @@ export async function syncGoogleSheetTickers(): Promise<{
   // Iterate over each ticker from the Google Sheet data
   for (const sheetTicker of data) {
     const tickerLabel = sheetTicker.label;
-    const ticker = tickerLabel.toLowerCase().replace(/[\s_]+/g, "-");
-    if (!existingTickerSet.has(ticker)) {
-      await createTicker({ ticker: ticker });
+    // const ticker = tickerLabel.toLowerCase().replace(/[\s_]+/g, "-");
+    if (!existingTickerSet.has(tickerLabel)) {
+      await createTicker({ ticker: tickerLabel });
       created++;
     } else {
       existing++;

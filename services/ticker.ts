@@ -8,7 +8,6 @@ export async function createTicker(data: {
   return await prisma.ticker.create({
     data: {
       ticker: data.ticker,
-      name: data.ticker.toUpperCase(),
       shares: data.shares ?? 0,
     },
   });

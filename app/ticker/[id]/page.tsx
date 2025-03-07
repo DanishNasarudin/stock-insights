@@ -1,15 +1,15 @@
-import { getTickerByName } from "@/services/ticker";
+import { getTickerById } from "@/services/ticker";
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: number }>;
 };
 
 export default async function TickerPage({ params }: Props) {
   const { id } = await params;
 
-  const ticker = await getTickerByName(id);
+  const ticker = await getTickerById(Number(id));
 
   console.log(ticker, "CHECK");
 
-  return <div>Page Ticker: {id}</div>;
+  return <div>Page Ticker: {ticker?.ticker}</div>;
 }

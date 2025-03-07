@@ -1,11 +1,28 @@
 "use client";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
-import { memo } from "react";
+import Link from "next/link";
+import { memo, SetStateAction } from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { CommentNode } from "./Comments";
 
-function PureComment({ data }: { data: CommentNode }) {
+type PureComment = {
+  data: CommentNode;
+  hasChildren?: boolean;
+  depth?: number;
+  expanded?: boolean;
+  setExpanded?: (newValue: SetStateAction<boolean>) => void;
+  length?: number;
+};
+
+function PureComment({
+  data,
+  hasChildren = false,
+  depth = -1,
+  expanded = false,
+  setExpanded = () => {},
+  length = -1,
+}: PureComment) {
   const time = timeAgo(data.updatedAt);
 
   function numberOfLikes() {
@@ -27,7 +44,7 @@ function PureComment({ data }: { data: CommentNode }) {
           </div>
         )} */}
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 w-full">
         <div className="flex gap-2">
           <p className="font-bold leading-none">{data.userId}</p>
           <p className="leading-none text-muted-foreground/50">{time}</p>
@@ -43,6 +60,27 @@ function PureComment({ data }: { data: CommentNode }) {
             {numberOfComments()}
           </Button>
         </div>
+        {hasChildren && depth < 2 && (
+          <Button
+            variant={"link"}
+            size={"sm"}
+            onClick={() => setExpanded((prev) => !prev)}
+            className="text-sm text-blue-500 w-full justify-start px-0 h-4"
+          >
+            {expanded ? "Hide replies" : `Show replies (${length})`}
+          </Button>
+        )}
+        {hasChildren && depth === 2 && (
+          <Link href={`/ticker/${data.tickerId}`}>
+            <Button
+              variant={"link"}
+              size={"sm"}
+              className="text-sm text-blue-500 w-full justify-start px-0 h-4"
+            >
+              Show more replies
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );

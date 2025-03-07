@@ -15,7 +15,7 @@ const placeholder: CommentType[] = [
     likes: 10,
     dislikes: 2,
     userId: "user_123",
-    tickerId: 1001,
+    tickerId: 1,
     parentId: null,
     createdAt: new Date("2025-02-25T12:00:00Z"),
     updatedAt: new Date("2025-02-25T14:30:00Z"),
@@ -26,7 +26,7 @@ const placeholder: CommentType[] = [
     likes: 5,
     dislikes: 1,
     userId: "user_456",
-    tickerId: 1001,
+    tickerId: 1,
     parentId: 1,
     createdAt: new Date("2025-02-25T12:30:00Z"),
     updatedAt: new Date("2025-02-25T14:35:00Z"),
@@ -37,7 +37,7 @@ const placeholder: CommentType[] = [
     likes: 2,
     dislikes: 5,
     userId: "user_789",
-    tickerId: 1002,
+    tickerId: 1,
     parentId: 2,
     createdAt: new Date("2025-02-25T08:15:00Z"),
     updatedAt: new Date("2025-02-25T09:45:00Z"),
@@ -48,7 +48,7 @@ const placeholder: CommentType[] = [
     likes: 3,
     dislikes: 0,
     userId: "user_101",
-    tickerId: 1001,
+    tickerId: 1,
     parentId: 1,
     createdAt: new Date("2025-02-25T13:10:00Z"),
     updatedAt: new Date("2025-02-25T13:20:00Z"),
@@ -59,7 +59,7 @@ const placeholder: CommentType[] = [
     likes: 8,
     dislikes: 1,
     userId: "user_202",
-    tickerId: 1003,
+    tickerId: 1,
     parentId: null,
     createdAt: new Date("2025-02-25T09:00:00Z"),
     updatedAt: new Date("2025-02-25T10:30:00Z"),
@@ -112,22 +112,17 @@ const CommentItem: React.FC<CommentItemProps> = ({ node, depth = 1 }) => {
 
   return (
     <div className="mb-2">
-      <Comment data={node} />
-      {hasChildren && depth < 2 && (
-        <button
-          onClick={() => setExpanded((prev) => !prev)}
-          className="text-sm text-blue-500 mt-1"
-        >
-          {expanded ? "Hide replies" : `Show replies (${node.children.length})`}
-        </button>
-      )}
-      {hasChildren && depth === 2 && (
-        <a href={`/`} className="text-sm text-blue-500 mt-1 block">
-          Show more replies
-        </a>
-      )}
+      <Comment
+        data={node}
+        hasChildren={hasChildren}
+        depth={depth}
+        expanded={expanded}
+        setExpanded={setExpanded}
+        length={node.children.length}
+      />
+
       {expanded && hasChildren && depth < 2 && (
-        <div className="ml-4">
+        <div className="ml-12 mt-2">
           {node.children.map((child) => (
             <CommentItem key={child.id} node={child} depth={depth + 1} />
           ))}
