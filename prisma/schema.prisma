@@ -16,6 +16,7 @@ datasource db {
 model Ticker {
   id     Int    @id @default(autoincrement())
   ticker String @unique @db.VarChar(255)
+  name   String
 
   comments       Comment[]
   tickerLikes    TickerLike[]

@@ -8,18 +8,19 @@ export async function createTicker(data: {
   return await prisma.ticker.create({
     data: {
       ticker: data.ticker,
+      name: data.ticker.toUpperCase(),
       shares: data.shares ?? 0,
     },
   });
 }
 
-export type TickerWithCommetsAndLikesAndDislikes = Prisma.TickerGetPayload<{
+export type TickerWithCommentsAndLikesAndDislikes = Prisma.TickerGetPayload<{
   include: { comments: true; tickerLikes: true; tickerDislikes: true };
 }>;
 
 export async function getTickerById(
   id: number
-): Promise<TickerWithCommetsAndLikesAndDislikes | null> {
+): Promise<TickerWithCommentsAndLikesAndDislikes | null> {
   return await prisma.ticker.findUnique({
     where: { id },
     include: {
@@ -32,15 +33,35 @@ export async function getTickerById(
 
 export async function getTickerByName(
   name: string
-): Promise<TickerWithCommetsAndLikesAndDislikes | null> {
-  return await prisma.ticker.findUnique({
-    where: { ticker: name },
-    include: {
-      comments: true,
-      tickerLikes: true,
-      tickerDislikes: true,
+): Promise<TickerWithCommentsAndLikesAndDislikes | null> {
+  const findTicker = await prisma.ticker.findFirst({
+    where: {
+      ticker: {
+        contains: name,
+        mode: "insensitive",
+      },
     },
   });
+
+  if (findTicker) {
+    return await prisma.ticker.findUnique({
+      where: { ticker: findTicker.ticker },
+      include: {
+        comments: true,
+        tickerLikes: true,
+        tickerDislikes: true,
+      },
+    });
+  } else {
+    return await prisma.ticker.findUnique({
+      where: { ticker: name.toUpperCase() },
+      include: {
+        comments: true,
+        tickerLikes: true,
+        tickerDislikes: true,
+      },
+    });
+  }
 }
 
 export async function updateTicker(

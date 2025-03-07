@@ -10,6 +10,7 @@ import {
   syncGoogleSheetTickers,
 } from "@/services/google-sheet";
 import { getTickerByName } from "@/services/ticker";
+import { Comment } from "@prisma/client";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
 
@@ -17,10 +18,16 @@ export const revalidate = 120;
 export const dynamic = "force-static";
 export const dynamicParams = true;
 
+/**
+ * Attributes:
+ * {values, label, valueName, valueType, likes, dislikes, shares, createdAt, updatedAt}
+ */
 export type TickerDataType = SheetDataType & {
   likes: number;
   dislikes: number;
   shares: number;
+  comments: number;
+  commentArray: Comment[];
   createdAt: string;
   updatedAt: string;
 };
@@ -66,6 +73,8 @@ export default async function Home({
               likes: 0,
               dislikes: 0,
               shares: 0,
+              comments: 0,
+              commentArray: [],
               createdAt: "",
               updatedAt: "",
             };
@@ -76,6 +85,8 @@ export default async function Home({
             likes: dataTicker.tickerLikes.length,
             dislikes: dataTicker.tickerDislikes.length,
             shares: dataTicker.shares,
+            comments: dataTicker.comments.length,
+            commentArray: dataTicker.comments,
             createdAt: dataTicker.createdAt.toISOString(),
             updatedAt: dataTicker.updatedAt.toISOString(),
           };
@@ -94,6 +105,8 @@ export default async function Home({
             likes: number;
             dislikes: number;
             shares: number;
+            comments: number;
+            commentArray: Comment[];
             createdAt: string;
             updatedAt: string;
           }[][],

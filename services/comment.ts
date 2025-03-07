@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import {
   CommentDislike,
   CommentLike,
+  Prisma,
   Comment as PrismaComment,
 } from "@prisma/client";
 
@@ -21,16 +22,18 @@ export async function createComment(data: {
   });
 }
 
+export type CommentWithRepliesAndLikesAndUser = Prisma.CommentGetPayload<{
+  include: { replies: true; commentLikes: true; user: true };
+}>;
+
 export async function getCommentById(
   id: number
-): Promise<PrismaComment | null> {
+): Promise<CommentWithRepliesAndLikesAndUser | null> {
   return await prisma.comment.findUnique({
     where: { id },
     include: {
       replies: true,
       commentLikes: true,
-      commentDislikes: true,
-      ticker: true,
       user: true,
     },
   });

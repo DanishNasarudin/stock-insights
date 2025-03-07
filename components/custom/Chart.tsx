@@ -10,18 +10,12 @@ import {
 } from "@/components/ui/chart";
 import { cn, randomTailwindHexColor } from "@/lib/utils";
 import { DividendDataType } from "@/services/google-sheet";
-import { ExpandIcon } from "lucide-react";
+import { HeartIcon, MessageCircleIcon, SendIcon } from "lucide-react";
+import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import { Separator } from "../ui/separator";
+import ChartDialog from "./ChartDialog";
 
 export default function Chart({
   data = {} as TickerDataType,
@@ -29,7 +23,16 @@ export default function Chart({
   data: TickerDataType;
 }) {
   // console.log(chartData.slice(-5), label, "CHECK");
-  const { values, label, valueName, valueType } = data;
+  const {
+    values,
+    label,
+    valueName,
+    valueType,
+    likes,
+    comments,
+    shares,
+    createdAt,
+  } = data;
   const dividendTrend = getDividendTrend(values.slice(-11));
 
   const colorTrend =
@@ -44,6 +47,8 @@ export default function Chart({
     },
   } satisfies ChartConfig;
 
+  const [isOpen, setIsOpen] = useState(false);
+
   // console.log(randomTailwindHexColor(), "CHECK");
   if (values.length === 0) return <></>;
   return (
@@ -56,44 +61,12 @@ export default function Chart({
     >
       <div className="flex justify-between">
         <span className="text-lg">{label}</span>
-        <Dialog aria-describedby="Details">
-          <DialogTrigger asChild>
-            <Button variant={"outline"} size={"icon"}>
-              <ExpandIcon />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="rounded-lg">
-            <DialogHeader>
-              <DialogTitle>{label}</DialogTitle>
-              <DialogDescription />
-            </DialogHeader>
-            <Separator />
-            <ChartContainer
-              config={chartConfig}
-              className="min-h-[100px] w-full mt-4"
-            >
-              <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="year"
-                  tickLine={true}
-                  tickMargin={10}
-                  axisLine={false}
-                />
-                <YAxis tickLine={false} axisLine={false} label={"%"} />
-                <ChartTooltip
-                  content={<ChartTooltipContent indicator="line" />}
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-                <Bar
-                  dataKey="dividend"
-                  radius={4}
-                  fill="var(--color-dividend)"
-                />
-              </BarChart>
-            </ChartContainer>
-          </DialogContent>
-        </Dialog>
+        <ChartDialog
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          data={data}
+          chartConfig={chartConfig}
+        />
       </div>
       <ChartContainer config={chartConfig} className="min-h-[100px] w-full">
         <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>
@@ -117,6 +90,27 @@ export default function Chart({
           <Bar dataKey="dividend" fill="var(--color-dividend)" radius={4} />
         </BarChart>
       </ChartContainer>
+      <Separator />
+      <div className="flex justify-between">
+        <div>
+          <Button variant={"ghost"} size={"icon"}>
+            <HeartIcon />
+            {likes > 0 && <span>{likes}</span>}
+          </Button>
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            onClick={() => setIsOpen(true)}
+          >
+            <MessageCircleIcon />
+            {comments > 0 && <span>{comments}</span>}
+          </Button>
+        </div>
+        <Button variant={"ghost"} size={"icon"}>
+          <SendIcon />
+          {shares > 0 && <span>{shares}</span>}
+        </Button>
+      </div>
     </div>
   );
 }

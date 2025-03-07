@@ -104,8 +104,9 @@ export async function syncGoogleSheetTickers(): Promise<{
   // Iterate over each ticker from the Google Sheet data
   for (const sheetTicker of data) {
     const tickerLabel = sheetTicker.label;
-    if (!existingTickerSet.has(tickerLabel.toLowerCase())) {
-      await createTicker({ ticker: tickerLabel });
+    const ticker = tickerLabel.toLowerCase().replace(/[\s_]+/g, "-");
+    if (!existingTickerSet.has(ticker)) {
+      await createTicker({ ticker: ticker });
       created++;
     } else {
       existing++;
