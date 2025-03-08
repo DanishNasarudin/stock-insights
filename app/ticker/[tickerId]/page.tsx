@@ -5,16 +5,16 @@ import { getSheetData } from "@/services/google-sheet";
 import { getTickerById } from "@/services/ticker";
 
 type Props = {
-  params: Promise<{ id: number }>;
+  params: Promise<{ tickerId: number }>;
 };
 
 export default async function TickerPage({ params }: Props) {
-  const { id } = await params;
+  const { tickerId } = await params;
 
-  const ticker = await getTickerById(Number(id));
+  const ticker = await getTickerById(Number(tickerId));
   const { data, success } = await getSheetData(ticker?.ticker);
 
-  console.log(ticker, "CHECK");
+  // console.log(ticker, "CHECK");
 
   if (!success || !data || !ticker) return null;
 
@@ -30,9 +30,9 @@ export default async function TickerPage({ params }: Props) {
   };
 
   return (
-    <main className="w-[60vw] h-full max-w-4xl mx-auto flex flex-col items-center gap-4 p-4">
+    <main className="md:w-[60vw] h-full max-w-4xl mx-auto flex flex-col items-center gap-4 p-4">
       <Chart data={tickerDetails} />
-      <Comments disableScroll />
+      <Comments disableScroll comments={ticker.comments} />
     </main>
   );
 }

@@ -80,7 +80,7 @@ export default function ChartDialog({
           </BarChart>
         </ChartContainer>
         <Separator />
-        <Comments />
+        <Comments comments={commentArray} />
       </DialogContent>
     </Dialog>
   );

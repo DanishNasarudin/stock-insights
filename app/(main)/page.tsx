@@ -63,7 +63,7 @@ export default async function Home({
       : data
     : data;
 
-  console.log(await searchParams, search, searchTerm, "CHECK");
+  // console.log(await searchParams, search, searchTerm, "CHECK");
 
   const tickerDetails: Promise<TickerDataType[]> | undefined = filterData
     ? Promise.all(

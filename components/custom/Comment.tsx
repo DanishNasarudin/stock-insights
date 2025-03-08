@@ -71,7 +71,7 @@ function PureComment({
           </Button>
         )}
         {hasChildren && depth === 2 && (
-          <Link href={`/ticker/${data.tickerId}`}>
+          <Link href={`/ticker/${data.tickerId}/comment/${data.id}`}>
             <Button
               variant={"link"}
               size={"sm"}
