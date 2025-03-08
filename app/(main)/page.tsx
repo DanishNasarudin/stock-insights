@@ -9,7 +9,7 @@ import {
   SheetDataType,
   syncGoogleSheetTickers,
 } from "@/services/google-sheet";
-import { getTickerByName } from "@/services/ticker";
+import { createTicker, getTickerByName } from "@/services/ticker";
 import { Comment } from "@prisma/client";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
@@ -30,6 +30,7 @@ export type TickerDataType = SheetDataType & {
   commentArray: Comment[];
   createdAt: string;
   updatedAt: string;
+  id: number;
 };
 
 export default async function Home({
@@ -70,8 +71,9 @@ export default async function Home({
         filterData.map(async (item): Promise<TickerDataType> => {
           const dataTicker = await getTickerByName(item.label);
           if (!dataTicker) {
+            const newTicker = await createTicker({ ticker: item.label });
+
             return {
-              ...item,
               likes: 0,
               dislikes: 0,
               shares: 0,
@@ -79,11 +81,12 @@ export default async function Home({
               commentArray: [],
               createdAt: "",
               updatedAt: "",
+              id: newTicker.id,
+              ...item,
             };
           }
 
           return {
-            ...item,
             likes: dataTicker.tickerLikes.length,
             dislikes: dataTicker.tickerDislikes.length,
             shares: dataTicker.shares,
@@ -91,6 +94,8 @@ export default async function Home({
             commentArray: dataTicker.comments,
             createdAt: dataTicker.createdAt.toISOString(),
             updatedAt: dataTicker.updatedAt.toISOString(),
+            id: dataTicker.id,
+            ...item,
           };
         })
       )
@@ -111,6 +116,7 @@ export default async function Home({
             commentArray: Comment[];
             createdAt: string;
             updatedAt: string;
+            id: number;
           }[][],
           item,
           index

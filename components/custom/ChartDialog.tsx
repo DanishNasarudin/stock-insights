@@ -20,7 +20,7 @@ import {
   ChartTooltipContent,
 } from "../ui/chart";
 import { Separator } from "../ui/separator";
-import Comments from "./Comments";
+import CommentContainter from "./CommentContainter";
 
 type ChartDialogType = {
   isOpen: boolean;
@@ -46,6 +46,7 @@ export default function ChartDialog({
     comments,
     commentArray,
     createdAt,
+    id,
   } = data;
 
   return (
@@ -80,7 +81,10 @@ export default function ChartDialog({
           </BarChart>
         </ChartContainer>
         <Separator />
-        <Comments comments={commentArray} />
+        <CommentContainter
+          form={{ tickerId: id }}
+          comments={{ comments: commentArray }}
+        />
       </DialogContent>
     </Dialog>
   );

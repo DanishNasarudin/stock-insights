@@ -12,6 +12,16 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
         elements: {
           footer: "hidden",
         },
+        signIn: {
+          variables: {
+            colorBackground: "transparent",
+          },
+          elements: {
+            cardBox: {
+              boxShadow: "none",
+            },
+          },
+        },
       }}
     >
       <ThemeProvider

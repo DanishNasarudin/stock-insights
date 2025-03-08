@@ -1,4 +1,4 @@
-import Comments from "@/components/custom/Comments";
+import CommentContainter from "@/components/custom/CommentContainter";
 import { getSheetData } from "@/services/google-sheet";
 import { getTickerById } from "@/services/ticker";
 
@@ -14,5 +14,10 @@ export default async function Page({
 
   if (!success || !data || !ticker) return null;
 
-  return <Comments disableScroll comments={ticker.comments} />;
+  return (
+    <CommentContainter
+      form={{ tickerId: ticker.id }}
+      comments={{ disableScroll: true, comments: ticker.comments }}
+    />
+  );
 }

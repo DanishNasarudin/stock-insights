@@ -22,7 +22,6 @@ export default async function Layout({
   if (!success || !data || !ticker) return null;
 
   const tickerDetails: TickerDataType = {
-    ...data[0],
     likes: ticker?.tickerLikes?.length || 0,
     dislikes: ticker?.tickerDislikes?.length || 0,
     shares: ticker?.shares || 0,
@@ -30,10 +29,12 @@ export default async function Layout({
     commentArray: ticker?.comments || [],
     createdAt: ticker?.createdAt?.toISOString() || "",
     updatedAt: ticker?.updatedAt?.toISOString() || "",
+    id: ticker.id,
+    ...data[0],
   };
   return (
     <main className="md:w-[60vw] h-full max-w-4xl mx-auto flex flex-col items-center gap-4 p-4">
-      <Chart data={tickerDetails} />
+      <Chart data={tickerDetails} oneDisplay />
       {comment}
     </main>
   );

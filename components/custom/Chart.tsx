@@ -19,8 +19,10 @@ import ChartDialog from "./ChartDialog";
 
 export default function Chart({
   data = {} as TickerDataType,
+  oneDisplay = false,
 }: {
   data: TickerDataType;
+  oneDisplay?: boolean;
 }) {
   // console.log(chartData.slice(-5), label, "CHECK");
   const {
@@ -61,12 +63,14 @@ export default function Chart({
     >
       <div className="flex justify-between">
         <span className="text-lg">{label}</span>
-        <ChartDialog
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          data={data}
-          chartConfig={chartConfig}
-        />
+        {!oneDisplay && (
+          <ChartDialog
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            data={data}
+            chartConfig={chartConfig}
+          />
+        )}
       </div>
       <ChartContainer config={chartConfig} className="min-h-[100px] w-full">
         <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>

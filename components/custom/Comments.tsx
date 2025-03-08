@@ -124,7 +124,7 @@ export default function Comments({
           </Link>
           {activeNode.parentId !== null && (
             <>
-              <Separator className="!flex-shrink h-[2px]" />
+              <Separator className="!flex-shrink" />
               <Link href={`/ticker/${activeNode.tickerId}`}>
                 <Button
                   variant={"link"}

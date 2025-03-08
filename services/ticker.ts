@@ -23,7 +23,11 @@ export async function getTickerById(
   return await prisma.ticker.findUnique({
     where: { id },
     include: {
-      comments: true,
+      comments: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
       tickerLikes: true,
       tickerDislikes: true,
     },
@@ -46,7 +50,11 @@ export async function getTickerByName(
     return await prisma.ticker.findUnique({
       where: { ticker: findTicker.ticker },
       include: {
-        comments: true,
+        comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         tickerLikes: true,
         tickerDislikes: true,
       },
@@ -55,7 +63,11 @@ export async function getTickerByName(
     return await prisma.ticker.findUnique({
       where: { ticker: name.toUpperCase() },
       include: {
-        comments: true,
+        comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         tickerLikes: true,
         tickerDislikes: true,
       },

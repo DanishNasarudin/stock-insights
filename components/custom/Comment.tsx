@@ -1,9 +1,11 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { memo, SetStateAction } from "react";
+import { memo, SetStateAction, useEffect, useState } from "react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
+import CommentForm from "./CommentForm";
 import { CommentNode } from "./Comments";
 
 type PureComment = {
@@ -32,6 +34,16 @@ function PureComment({
     return data.children.length > 0 && <span>{data.children.length}</span>;
   }
 
+  const [openComment, setOpenComment] = useState(false);
+
+  useEffect(() => {
+    if (openComment) {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [openComment]);
+
   return (
     <div className="flex gap-2 py-2">
       <div className="flex flex-col items-center">
@@ -55,17 +67,33 @@ function PureComment({
             <HeartIcon />
             {numberOfLikes()}
           </Button>
-          <Button variant={"ghost"} size={"icon"} className="gap-1">
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            className="gap-1"
+            onClick={() => setOpenComment(!openComment)}
+          >
             <MessageCircleIcon />
             {numberOfComments()}
           </Button>
         </div>
+        {openComment && (
+          <CommentForm
+            setOpenComment={setOpenComment}
+            tickerId={data.tickerId}
+            parentId={data.id}
+            className="pb-4 pt-3"
+          />
+        )}
         {hasChildren && depth < 2 && (
           <Button
             variant={"link"}
             size={"sm"}
             onClick={() => setExpanded((prev) => !prev)}
-            className="text-sm text-blue-500 w-full justify-start px-0 h-4"
+            className={cn(
+              !expanded && "mb-2",
+              "text-sm text-blue-500 w-full justify-start px-0 h-4"
+            )}
           >
             {expanded ? "Hide replies" : `Show replies (${length})`}
           </Button>

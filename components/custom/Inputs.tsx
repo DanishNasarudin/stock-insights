@@ -42,7 +42,7 @@ export default function Inputs() {
       />
       {isLoading && (
         <div className="absolute top-[50%] translate-y-[-50%] right-8">
-          <Loader2Icon className="animate-spin stroke-zinc-400 w-4" />
+          <Loader2Icon className="animate-spin stroke-zinc-400 w-4 " />
         </div>
       )}
       {value && (
