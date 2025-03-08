@@ -34,7 +34,9 @@ type GetSheetDataResponse = ResponseType & {
  * Getting all available data from google sheet
  * @returns data: { values, label }, updatedAt
  */
-export async function getSheetData(): Promise<GetSheetDataResponse> {
+export async function getSheetData(
+  filter: string = ""
+): Promise<GetSheetDataResponse> {
   try {
     const googleSheets = google.sheets({ version: "v4", auth: googleAuth });
 
@@ -68,7 +70,8 @@ export async function getSheetData(): Promise<GetSheetDataResponse> {
 
         return { label, values, valueName, valueType };
       })
-      .sort((a, b) => a.label.localeCompare(b.label));
+      .sort((a, b) => a.label.localeCompare(b.label))
+      .filter((ticker) => (filter !== "" ? ticker.label === filter : ticker));
 
     return {
       success: true,

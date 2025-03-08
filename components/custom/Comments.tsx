@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { Comment as CommentType } from "@prisma/client";
 import { useState } from "react";
 import { Separator } from "../ui/separator";
@@ -66,12 +67,21 @@ const placeholder: CommentType[] = [
   },
 ];
 
-export default function Comments() {
+export default function Comments({
+  disableScroll = false,
+}: {
+  disableScroll?: boolean;
+}) {
   const commentTree = buildCommentTree(placeholder);
   console.log(commentTree, "CHECK");
 
   return (
-    <div className="overflow-y-auto max-h-[300px]">
+    <div
+      className={cn(
+        !disableScroll && "overflow-y-auto",
+        "max-h-[300px] w-full"
+      )}
+    >
       {commentTree.map((node) => (
         <CommentItem key={node.id} node={node} />
       ))}

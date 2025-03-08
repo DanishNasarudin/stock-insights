@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 
-import { TickerDataType } from "@/app/page";
+import { TickerDataType } from "@/app/(main)/page";
 import { ExpandIcon } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "../ui/button";

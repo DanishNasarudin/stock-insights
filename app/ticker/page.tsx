@@ -4,5 +4,4 @@ type Props = {};
 
 export default function Page({}: Props) {
   redirect("/");
-  return null;
 }

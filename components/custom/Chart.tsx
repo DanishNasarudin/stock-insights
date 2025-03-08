@@ -1,5 +1,5 @@
 "use client";
-import { TickerDataType } from "@/app/page";
+import { TickerDataType } from "@/app/(main)/page";
 import {
   ChartConfig,
   ChartContainer,
@@ -56,7 +56,7 @@ export default function Chart({
       className={cn(
         "w-full flex flex-col gap-4 justify-between",
         "p-4 border-border border-[1px] rounded-lg",
-        ""
+        "h-min"
       )}
     >
       <div className="flex justify-between">

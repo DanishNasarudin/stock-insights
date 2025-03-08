@@ -14,9 +14,9 @@ import { Comment } from "@prisma/client";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
 
-export const revalidate = 120;
-export const dynamic = "force-static";
-export const dynamicParams = true;
+// export const revalidate = 120;
+// export const dynamic = "force-static";
+// export const dynamicParams = true;
 
 /**
  * Attributes:
@@ -62,6 +62,8 @@ export default async function Home({
         )
       : data
     : data;
+
+  console.log(await searchParams, search, searchTerm, "CHECK");
 
   const tickerDetails: Promise<TickerDataType[]> | undefined = filterData
     ? Promise.all(
