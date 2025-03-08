@@ -1,21 +1,25 @@
 import { TickerDataType } from "@/app/(main)/page";
 import Chart from "@/components/custom/Chart";
-import Comments from "@/components/custom/Comments";
 import { getSheetData } from "@/services/google-sheet";
 import { getTickerById } from "@/services/ticker";
+import React from "react";
 
-type Props = {
-  params: Promise<{ commentId: number; tickerId: number }>;
-};
-
-export default async function Page({ params }: Props) {
-  const { commentId, tickerId } = await params;
-
+export default async function Layout({
+  children,
+  comment,
+  params,
+}: {
+  children: React.ReactNode;
+  comment: React.ReactNode;
+  params: Promise<{ tickerId: number }>;
+}) {
+  const { tickerId } = await params;
   const ticker = await getTickerById(Number(tickerId));
   const { data, success } = await getSheetData(ticker?.ticker);
 
+  // console.log(ticker, "CHECK");
+
   if (!success || !data || !ticker) return null;
-  // console.log(ticker.comments, "CHECK");
 
   const tickerDetails: TickerDataType = {
     ...data[0],
@@ -27,15 +31,10 @@ export default async function Page({ params }: Props) {
     createdAt: ticker?.createdAt?.toISOString() || "",
     updatedAt: ticker?.updatedAt?.toISOString() || "",
   };
-
   return (
     <main className="md:w-[60vw] h-full max-w-4xl mx-auto flex flex-col items-center gap-4 p-4">
       <Chart data={tickerDetails} />
-      <Comments
-        disableScroll
-        comments={ticker.comments}
-        currentComment={Number(commentId)}
-      />
+      {comment}
     </main>
   );
 }
