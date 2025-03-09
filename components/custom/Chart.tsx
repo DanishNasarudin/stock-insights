@@ -10,12 +10,16 @@ import {
 } from "@/components/ui/chart";
 import { cn, randomTailwindHexColor } from "@/lib/utils";
 import { DividendDataType } from "@/services/google-sheet";
+import { likeTicker, removeTickerLike } from "@/services/ticker";
+import { useClerk } from "@clerk/nextjs";
 import { HeartIcon, MessageCircleIcon, SendIcon } from "lucide-react";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import ChartDialog from "./ChartDialog";
+import LoginDialog from "./LoginDialog";
 
 export default function Chart({
   data = {} as TickerDataType,
@@ -34,6 +38,7 @@ export default function Chart({
     comments,
     shares,
     createdAt,
+    id,
   } = data;
   const dividendTrend = getDividendTrend(values.slice(-11));
 
@@ -50,6 +55,52 @@ export default function Chart({
   } satisfies ChartConfig;
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const user = useClerk();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  const [optimisticLikes, setOptimisticLikes] = useOptimistic(
+    data.likes,
+    (_, newLikes: number) => newLikes
+  );
+
+  const userLikedTicker = useMemo(
+    () =>
+      data.likeArray.some(
+        (ticker) =>
+          ticker.tickerId === data.id && ticker.userId === user.session?.user.id
+      ),
+    [data.likeArray, user.session?.user.id, data.id]
+  );
+
+  const [optimisticUserLiked, setOptimisticUserLiked] = useOptimistic(
+    userLikedTicker,
+    (_, newLike: boolean) => newLike
+  );
+
+  const [_, startTransition] = useTransition();
+
+  const handleLikeTicker = async () => {
+    if (!user.session?.user.id) {
+      setOpen(true);
+      return;
+    }
+
+    if (optimisticUserLiked) {
+      startTransition(() => {
+        setOptimisticLikes(optimisticLikes - 1);
+        setOptimisticUserLiked(false);
+      });
+      await removeTickerLike(id, user.session?.user.id, pathname);
+    } else {
+      startTransition(() => {
+        setOptimisticLikes(optimisticLikes + 1);
+        setOptimisticUserLiked(true);
+      });
+      await likeTicker(id, user.session?.user.id, pathname);
+    }
+  };
 
   // console.log(randomTailwindHexColor(), "CHECK");
   if (values.length === 0) return <></>;
@@ -97,9 +148,19 @@ export default function Chart({
       <Separator />
       <div className="flex justify-between">
         <div>
-          <Button variant={"ghost"} size={"icon"}>
-            <HeartIcon />
-            {likes > 0 && <span>{likes}</span>}
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            onClick={handleLikeTicker}
+            className={cn(
+              "gap-1 ",
+              optimisticUserLiked && "text-red-500 hover:text-red-500"
+            )}
+          >
+            <HeartIcon
+              className={cn(optimisticUserLiked && "stroke-red-500")}
+            />
+            {optimisticLikes > 0 && <span>{optimisticLikes}</span>}
           </Button>
           <Button
             variant={"ghost"}
@@ -115,6 +176,7 @@ export default function Chart({
           {shares > 0 && <span>{shares}</span>}
         </Button>
       </div>
+      <LoginDialog open={open} onOpenChange={setOpen} />
     </div>
   );
 }

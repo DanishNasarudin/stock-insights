@@ -1,12 +1,24 @@
 "use client";
 import { cn, timeAgo } from "@/lib/utils";
+import { likeComment, removeCommentLike } from "@/services/comment";
+import { useClerk } from "@clerk/nextjs";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { memo, SetStateAction, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import {
+  memo,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import CommentForm from "./CommentForm";
 import { CommentNode } from "./Comments";
+import LoginDialog from "./LoginDialog";
 
 type PureComment = {
   data: CommentNode;
@@ -26,9 +38,57 @@ function PureComment({
   length = -1,
 }: PureComment) {
   const time = timeAgo(data.updatedAt);
+  const user = useClerk();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  const [optimisticLikes, setOptimisticLikes] = useOptimistic(
+    data.likes,
+    (_, newLikes: number) => newLikes
+  );
+
+  const userLikedComment = useMemo(
+    () =>
+      data.commentLikes.some(
+        (comment) =>
+          comment.commentId === data.id &&
+          comment.userId === user.session?.user.id
+      ),
+    [user.session?.user.id, data.commentLikes, data.id]
+  );
+
+  const [optimisticUserLiked, setOptimisticUserLiked] = useOptimistic(
+    userLikedComment,
+    (_, newLike: boolean) => newLike
+  );
+
+  const [_, startTransition] = useTransition();
+
+  const handleLikeComment = async () => {
+    if (!user.session?.user.id) {
+      setOpen(true);
+      return;
+    }
+
+    if (optimisticUserLiked) {
+      startTransition(() => {
+        setOptimisticLikes(optimisticLikes - 1);
+        setOptimisticUserLiked(false);
+      });
+      await removeCommentLike(data.id, user.session?.user.id, pathname);
+    } else {
+      startTransition(() => {
+        setOptimisticLikes(optimisticLikes + 1);
+        setOptimisticUserLiked(true);
+      });
+      await likeComment(data.id, user.session?.user.id, pathname);
+    }
+  };
+
+  // console.log(userLikedComment, "CHECK LIKES");
 
   function numberOfLikes() {
-    return data.likes > 0 && <span>{data.likes}</span>;
+    return optimisticLikes > 0 && <span>{optimisticLikes}</span>;
   }
   function numberOfComments() {
     return data.children.length > 0 && <span>{data.children.length}</span>;
@@ -66,8 +126,18 @@ function PureComment({
         </div>
         <p>{data.content}</p>
         <div className="flex gap-4">
-          <Button variant={"ghost"} size={"icon"} className="gap-1">
-            <HeartIcon />
+          <Button
+            variant={"ghost"}
+            size={"icon"}
+            className={cn(
+              "gap-1 ",
+              optimisticUserLiked && "text-red-500 hover:text-red-500"
+            )}
+            onClick={handleLikeComment}
+          >
+            <HeartIcon
+              className={cn(optimisticUserLiked && "stroke-red-500")}
+            />
             {numberOfLikes()}
           </Button>
           <Button
@@ -113,6 +183,7 @@ function PureComment({
           </Link>
         )}
       </div>
+      <LoginDialog open={open} onOpenChange={setOpen} />
     </div>
   );
 }

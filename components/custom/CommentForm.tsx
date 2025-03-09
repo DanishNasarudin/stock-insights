@@ -105,7 +105,7 @@ export default function CommentForm({
                   type="text"
                   placeholder="Comment.."
                   {...field}
-                  className="w-full"
+                  className="w-full text-base"
                 />
               </FormControl>
               <FormMessage />

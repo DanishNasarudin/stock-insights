@@ -1,10 +1,11 @@
+"use server";
 import prisma from "@/lib/prisma";
 import {
   CommentDislike,
-  CommentLike,
   Prisma,
   Comment as PrismaComment,
 } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export type CommentWithUser = Prisma.CommentGetPayload<{
   include: { user: true };
@@ -66,14 +67,30 @@ export async function deleteComment(id: number): Promise<PrismaComment> {
 
 export async function likeComment(
   commentId: number,
-  userId: string
-): Promise<CommentLike> {
-  return await prisma.commentLike.create({
+  userId: string,
+  pathname: string
+) {
+  await prisma.commentLike.create({
     data: {
       comment: { connect: { id: commentId } },
       user: { connect: { id: userId } },
     },
   });
+
+  const totalLikes = await getCommentById(commentId);
+
+  await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      likes: totalLikes?.commentLikes.length || 0,
+    },
+  });
+
+  revalidatePath(pathname);
+
+  return totalLikes;
 }
 
 export async function dislikeComment(
@@ -90,11 +107,27 @@ export async function dislikeComment(
 
 export async function removeCommentLike(
   commentId: number,
-  userId: string
-): Promise<CommentLike> {
-  return await prisma.commentLike.delete({
+  userId: string,
+  pathname: string
+) {
+  await prisma.commentLike.delete({
     where: { commentId_userId: { commentId, userId } },
   });
+
+  const totalLikes = await getCommentById(commentId);
+
+  await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      likes: totalLikes?.commentLikes.length || 0,
+    },
+  });
+
+  revalidatePath(pathname);
+
+  return totalLikes;
 }
 
 export async function removeCommentDislike(

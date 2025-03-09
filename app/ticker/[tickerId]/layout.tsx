@@ -23,6 +23,7 @@ export default async function Layout({
 
   const tickerDetails: TickerDataType = {
     likes: ticker?.tickerLikes?.length || 0,
+    likeArray: ticker.tickerLikes || [],
     dislikes: ticker?.tickerDislikes?.length || 0,
     shares: ticker?.shares || 0,
     comments: ticker?.comments?.length || 0,

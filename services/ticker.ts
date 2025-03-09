@@ -1,5 +1,7 @@
+"use server";
 import prisma from "@/lib/prisma";
-import { Prisma, Ticker, TickerDislike, TickerLike } from "@prisma/client";
+import { Prisma, Ticker, TickerDislike } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function createTicker(data: {
   ticker: string;
@@ -112,14 +114,19 @@ export async function deleteTicker(id: number): Promise<Ticker> {
 
 export async function likeTicker(
   tickerId: number,
-  userId: string
-): Promise<TickerLike> {
-  return await prisma.tickerLike.create({
+  userId: string,
+  pathname: string
+) {
+  const response = await prisma.tickerLike.create({
     data: {
       ticker: { connect: { id: tickerId } },
       user: { connect: { id: userId } },
     },
   });
+
+  revalidatePath(pathname);
+
+  return response;
 }
 
 export async function dislikeTicker(
@@ -136,11 +143,16 @@ export async function dislikeTicker(
 
 export async function removeTickerLike(
   tickerId: number,
-  userId: string
-): Promise<TickerLike> {
-  return await prisma.tickerLike.delete({
+  userId: string,
+  pathname: string
+) {
+  const response = await prisma.tickerLike.delete({
     where: { tickerId_userId: { tickerId, userId } },
   });
+
+  revalidatePath(pathname);
+
+  return response;
 }
 
 export async function removeTickerDislike(

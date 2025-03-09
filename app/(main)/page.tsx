@@ -11,6 +11,7 @@ import {
   syncGoogleSheetTickers,
 } from "@/services/google-sheet";
 import { createTicker, getTickerByName } from "@/services/ticker";
+import { TickerLike } from "@prisma/client";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
 
@@ -24,6 +25,7 @@ import { Suspense } from "react";
  */
 export type TickerDataType = SheetDataType & {
   likes: number;
+  likeArray: TickerLike[];
   dislikes: number;
   shares: number;
   comments: number;
@@ -76,6 +78,7 @@ export default async function Home({
             return {
               ...item,
               likes: 0,
+              likeArray: [],
               dislikes: 0,
               shares: 0,
               comments: 0,
@@ -89,6 +92,7 @@ export default async function Home({
           return {
             ...item,
             likes: dataTicker.tickerLikes.length,
+            likeArray: dataTicker.tickerLikes,
             dislikes: dataTicker.tickerDislikes.length,
             shares: dataTicker.shares,
             comments: dataTicker.comments.length,
@@ -110,6 +114,7 @@ export default async function Home({
             valueName: string;
             valueType: string;
             likes: number;
+            likeArray: TickerLike[];
             dislikes: number;
             shares: number;
             comments: number;
