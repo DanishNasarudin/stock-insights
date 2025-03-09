@@ -14,7 +14,11 @@ export async function createTicker(data: {
 }
 
 export type TickerWithCommentsAndLikesAndDislikes = Prisma.TickerGetPayload<{
-  include: { comments: true; tickerLikes: true; tickerDislikes: true };
+  include: {
+    comments: { include: { replies: true; commentLikes: true; user: true } };
+    tickerLikes: true;
+    tickerDislikes: true;
+  };
 }>;
 
 export async function getTickerById(
@@ -24,6 +28,11 @@ export async function getTickerById(
     where: { id },
     include: {
       comments: {
+        include: {
+          replies: true,
+          commentLikes: true,
+          user: true,
+        },
         orderBy: {
           createdAt: "desc",
         },
@@ -51,6 +60,11 @@ export async function getTickerByName(
       where: { ticker: findTicker.ticker },
       include: {
         comments: {
+          include: {
+            replies: true,
+            commentLikes: true,
+            user: true,
+          },
           orderBy: {
             createdAt: "desc",
           },
@@ -64,6 +78,11 @@ export async function getTickerByName(
       where: { ticker: name.toUpperCase() },
       include: {
         comments: {
+          include: {
+            replies: true,
+            commentLikes: true,
+            user: true,
+          },
           orderBy: {
             createdAt: "desc",
           },

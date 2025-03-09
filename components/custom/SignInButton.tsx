@@ -13,13 +13,13 @@ export default function SignInButton() {
   return (
     <>
       <SignedOut>
-        <ClerkSignIn>
-          <TooltipWrapper content="SignIn">
+        <TooltipWrapper content="SignIn">
+          <ClerkSignIn>
             <Button variant={"outline"} size={"icon"}>
               <LogInIcon />
             </Button>
-          </TooltipWrapper>
-        </ClerkSignIn>
+          </ClerkSignIn>
+        </TooltipWrapper>
       </SignedOut>
       <SignedIn>
         <UserButton />

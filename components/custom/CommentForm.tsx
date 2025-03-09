@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -72,8 +72,16 @@ export default function CommentForm({
     });
 
     form.reset();
-    console.log(pathname, values, user?.id);
+    // console.log(pathname, values, user?.id);
   }
+
+  const initials = user?.fullName
+    ? user?.fullName
+        .split(/\s+/)
+        .filter((word) => word.length > 0)
+        .map((word) => word[0].toUpperCase())
+        .join("")
+    : "G";
 
   return (
     <Form {...form}>
@@ -88,7 +96,8 @@ export default function CommentForm({
             <FormItem className="flex w-full gap-2 items-center">
               <FormLabel>
                 <Avatar>
-                  <AvatarFallback>T</AvatarFallback>
+                  <AvatarImage src={user?.imageUrl || undefined} />
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </FormLabel>
               <FormControl className="!mt-0">

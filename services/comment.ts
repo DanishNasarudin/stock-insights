@@ -6,12 +6,20 @@ import {
   Comment as PrismaComment,
 } from "@prisma/client";
 
+export type CommentWithUser = Prisma.CommentGetPayload<{
+  include: { user: true };
+}>;
+
+export type CommentWithRepliesAndLikesAndUser = Prisma.CommentGetPayload<{
+  include: { replies: true; commentLikes: true; user: true };
+}>;
+
 export async function createComment(data: {
   content: string;
   tickerId: number;
   userId?: string;
   parentId?: number;
-}): Promise<PrismaComment> {
+}): Promise<CommentWithRepliesAndLikesAndUser> {
   return await prisma.comment.create({
     data: {
       content: data.content,
@@ -19,12 +27,13 @@ export async function createComment(data: {
       user: data.userId ? { connect: { id: data.userId } } : undefined,
       parent: data.parentId ? { connect: { id: data.parentId } } : undefined,
     },
+    include: {
+      replies: true,
+      commentLikes: true,
+      user: true,
+    },
   });
 }
-
-export type CommentWithRepliesAndLikesAndUser = Prisma.CommentGetPayload<{
-  include: { replies: true; commentLikes: true; user: true };
-}>;
 
 export async function getCommentById(
   id: number

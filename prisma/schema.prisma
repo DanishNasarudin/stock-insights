@@ -45,6 +45,7 @@ model Comment {
 
   commentLikes    CommentLike[]
   commentDislikes CommentDislike[]
+  notification    Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -60,6 +61,7 @@ model User {
   tickerDislikes  TickerDislike[]
   commentLikes    CommentLike[]
   commentDislikes CommentDislike[]
+  notifications   Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,4 +105,18 @@ model CommentDislike {
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([commentId, userId])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  type      String // New Comment, Ticker
+  from      String // UserID of Sender
+  fromUser  User     @relation(fields: [from], references: [id], onDelete: Cascade)
+  isRead    Boolean
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

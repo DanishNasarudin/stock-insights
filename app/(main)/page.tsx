@@ -3,6 +3,7 @@ import Inputs from "@/components/custom/Inputs";
 import Loading from "@/components/custom/Loading";
 import Placeholder from "@/components/custom/Placeholder";
 import { formatDateTime } from "@/lib/utils";
+import { CommentWithRepliesAndLikesAndUser } from "@/services/comment";
 import {
   DividendDataType,
   getSheetData,
@@ -10,7 +11,6 @@ import {
   syncGoogleSheetTickers,
 } from "@/services/google-sheet";
 import { createTicker, getTickerByName } from "@/services/ticker";
-import { Comment } from "@prisma/client";
 import { TriangleAlertIcon } from "lucide-react";
 import { Suspense } from "react";
 
@@ -27,7 +27,7 @@ export type TickerDataType = SheetDataType & {
   dislikes: number;
   shares: number;
   comments: number;
-  commentArray: Comment[];
+  commentArray: CommentWithRepliesAndLikesAndUser[];
   createdAt: string;
   updatedAt: string;
   id: number;
@@ -74,6 +74,7 @@ export default async function Home({
             const newTicker = await createTicker({ ticker: item.label });
 
             return {
+              ...item,
               likes: 0,
               dislikes: 0,
               shares: 0,
@@ -82,11 +83,11 @@ export default async function Home({
               createdAt: "",
               updatedAt: "",
               id: newTicker.id,
-              ...item,
             };
           }
 
           return {
+            ...item,
             likes: dataTicker.tickerLikes.length,
             dislikes: dataTicker.tickerDislikes.length,
             shares: dataTicker.shares,
@@ -95,7 +96,6 @@ export default async function Home({
             createdAt: dataTicker.createdAt.toISOString(),
             updatedAt: dataTicker.updatedAt.toISOString(),
             id: dataTicker.id,
-            ...item,
           };
         })
       )
@@ -113,7 +113,7 @@ export default async function Home({
             dislikes: number;
             shares: number;
             comments: number;
-            commentArray: Comment[];
+            commentArray: CommentWithRepliesAndLikesAndUser[];
             createdAt: string;
             updatedAt: string;
             id: number;

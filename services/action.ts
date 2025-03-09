@@ -1,9 +1,13 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { clerkClient } from "@clerk/nextjs/server";
-import { Comment } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { createComment } from "./comment";
+import {
+  CommentWithRepliesAndLikesAndUser,
+  createComment,
+  getCommentById,
+} from "./comment";
+import { createNotification } from "./notification";
 import { createUser } from "./user";
 
 export async function addComment({
@@ -18,7 +22,7 @@ export async function addComment({
   pathname: string;
   parentId?: number;
   userId?: string;
-}): Promise<Comment> {
+}): Promise<CommentWithRepliesAndLikesAndUser> {
   try {
     const userExist = await prisma.user.findUnique({
       where: {
@@ -47,6 +51,19 @@ export async function addComment({
       userId,
       parentId,
     });
+
+    if (parentId && userId) {
+      const repliedToUser = await getCommentById(parentId);
+
+      if (repliedToUser?.userId && userId !== repliedToUser.userId) {
+        await createNotification({
+          userId: repliedToUser.userId,
+          type: "comment",
+          from: userId,
+          commentId: response.id,
+        });
+      }
+    }
 
     revalidatePath(pathname);
 

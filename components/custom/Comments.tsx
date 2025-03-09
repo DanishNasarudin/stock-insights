@@ -1,5 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { CommentWithRepliesAndLikesAndUser } from "@/services/comment";
 import { Comment as CommentType } from "@prisma/client";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Comment } from "./Comment";
 
-export interface CommentNode extends CommentType {
+export interface CommentNode extends CommentWithRepliesAndLikesAndUser {
   children: CommentNode[];
 }
 
@@ -75,7 +76,7 @@ export default function Comments({
   currentComment,
 }: {
   disableScroll?: boolean;
-  comments?: CommentType[];
+  comments?: CommentWithRepliesAndLikesAndUser[];
   currentComment?: number;
 }) {
   const commentTree = buildCommentTree(comments);
@@ -194,7 +195,9 @@ const CommentItem: React.FC<CommentItemProps> = ({
   );
 };
 
-function buildCommentTree(comments: CommentType[]): CommentNode[] {
+function buildCommentTree(
+  comments: CommentWithRepliesAndLikesAndUser[]
+): CommentNode[] {
   const map = new Map<number, CommentNode>();
   const roots: CommentNode[] = [];
 

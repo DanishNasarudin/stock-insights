@@ -1,11 +1,22 @@
 import icon from "@/public/logo.png";
+import { getNotificationUnreadByUser } from "@/services/notification";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import NotificationButton from "./NotificationButton";
 import SignInButton from "./SignInButton";
 import ThemeButton from "./ThemeButton";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const { userId } = await auth();
+
+  let notifications: number = 0;
+
+  if (userId) {
+    notifications = await getNotificationUnreadByUser({ userId });
+  }
+
   return (
     <nav className="p-4 bg-gradient-to-r from-blue-950 to-blue-900 border-b-border border-b-[1px] flex justify-between items-center align-middle">
       <Link href={"/"}>
@@ -25,6 +36,7 @@ export default function Navbar() {
       </Link>
       <div className="flex align-middle gap-4">
         <SignInButton />
+        {userId && <NotificationButton notifications={notifications} />}
         <ThemeButton />
       </div>
     </nav>

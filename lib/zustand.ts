@@ -1,11 +1,12 @@
 import { addComment } from "@/services/action";
-import { Comment } from "@prisma/client";
+import { CommentWithRepliesAndLikesAndUser } from "@/services/comment";
+import { User } from "@prisma/client";
 import { toast } from "sonner";
 import { create } from "zustand";
 
 type CommentStore = {
-  comments: Comment[];
-  initComment: (comments: Comment[]) => void;
+  comments: CommentWithRepliesAndLikesAndUser[];
+  initComment: (comments: CommentWithRepliesAndLikesAndUser[]) => void;
   createComment: (data: {
     content: string;
     pathname: string;
@@ -24,7 +25,7 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
   createComment: async ({ content, tickerId, userId, parentId, pathname }) => {
     const currentComments = get().comments;
 
-    const newComments: Comment[] = [
+    const newComments: CommentWithRepliesAndLikesAndUser[] = [
       {
         id: -1,
         content,
@@ -35,6 +36,9 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         parentId: parentId || null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        user: {} as User,
+        commentLikes: [],
+        replies: [],
       },
       ...currentComments,
     ];
@@ -49,7 +53,12 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         parentId,
         userId,
       });
-      set({ comments: [response, ...currentComments] });
+      set({
+        comments: [
+          { ...response, user: {} as User, commentLikes: [], replies: [] },
+          ...currentComments,
+        ],
+      });
     } catch (error: any) {
       toast.error(`Failed to add comment, Error: ${error.message}`);
       set({ comments: currentComments });

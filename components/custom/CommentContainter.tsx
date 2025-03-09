@@ -1,6 +1,6 @@
 "use client";
 import { useCommentStore } from "@/lib/zustand";
-import { Comment } from "@prisma/client";
+import { CommentWithRepliesAndLikesAndUser } from "@/services/comment";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import CommentForm from "./CommentForm";
@@ -13,7 +13,7 @@ type Props = {
   };
   comments?: {
     disableScroll?: boolean;
-    comments?: Comment[];
+    comments?: CommentWithRepliesAndLikesAndUser[];
     currentComment?: number;
   };
 };
@@ -23,9 +23,8 @@ export default function CommentContainter({ form, comments }: Props) {
   const initComment = useCommentStore(useShallow((state) => state.initComment));
 
   useEffect(() => {
-    if (comments?.comments && comments.comments.length > zusComments.length)
-      initComment(comments?.comments);
-  }, [comments?.comments, zusComments]);
+    if (comments?.comments) initComment(comments?.comments);
+  }, [comments?.comments]);
 
   const commentsMemo = useMemo(() => {
     if (zusComments.length > 0) return zusComments;

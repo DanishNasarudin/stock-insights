@@ -127,3 +127,22 @@ export function randomTailwindHexColor(): string {
 
   return shade; // Hex color code
 }
+
+export const timeAgo = (updatedAt: Date): string => {
+  const now = new Date();
+  const diffInSeconds = Math.floor(
+    (now.getTime() - updatedAt.getTime()) / 1000
+  );
+
+  const minutes = Math.floor(diffInSeconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const weeks = Math.floor(days / 7);
+  const years = Math.floor(days / 365);
+
+  if (years > 0) return `${years}y`;
+  if (weeks > 0) return `${weeks}w`;
+  if (days > 0) return `${days}d`;
+  if (hours > 0) return `${hours}h`;
+  return `${minutes}m`;
+};
