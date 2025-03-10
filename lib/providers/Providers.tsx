@@ -2,7 +2,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { SocketProvider } from "./socket-provider";
 import { ThemeProvider } from "./theme-provider";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
@@ -25,17 +24,17 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
         },
       }}
     >
-      <SocketProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster richColors />
-        </ThemeProvider>
-      </SocketProvider>
+      {/* <SocketProvider> */}
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+        <Toaster richColors />
+      </ThemeProvider>
+      {/* </SocketProvider> */}
     </ClerkProvider>
   );
 };
