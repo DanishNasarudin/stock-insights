@@ -42,7 +42,7 @@ export default async function Home({
 }) {
   const { search } = await searchParams;
   const { data, success, updatedAt } = await getSheetData();
-  syncGoogleSheetTickers();
+  await syncGoogleSheetTickers();
 
   const searchTerm = Array.isArray(search) ? search[0] : search;
 

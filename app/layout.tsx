@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase:
     process.env.NODE_ENV === "production"
-      ? new URL("https://easydivmy.vercel.app")
+      ? new URL("https://easydivmy.danishnasarudin.com")
       : new URL("http://localhost:3000"),
   title: "EasyDivMy - Malaysia's Stock Dividend Tracker",
   description:
