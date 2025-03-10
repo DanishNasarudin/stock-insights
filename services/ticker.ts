@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import { Prisma, Ticker, TickerDislike } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { isUserExist } from "./user";
 
 export async function createTicker(data: {
   ticker: string;
@@ -117,6 +118,8 @@ export async function likeTicker(
   userId: string,
   pathname: string | null
 ) {
+  await isUserExist(userId);
+
   const response = await prisma.tickerLike.create({
     data: {
       ticker: { connect: { id: tickerId } },
@@ -146,6 +149,8 @@ export async function removeTickerLike(
   userId: string,
   pathname: string | null
 ) {
+  await isUserExist(userId);
+
   const response = await prisma.tickerLike.delete({
     where: { tickerId_userId: { tickerId, userId } },
   });

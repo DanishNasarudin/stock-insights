@@ -1,6 +1,4 @@
 "use server";
-import prisma from "@/lib/prisma";
-import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import {
   CommentWithRepliesAndLikesAndUser,
@@ -8,7 +6,7 @@ import {
   getCommentById,
 } from "./comment";
 import { createNotification } from "./notification";
-import { createUser } from "./user";
+import { isUserExist } from "./user";
 
 export async function addComment({
   content,
@@ -21,29 +19,10 @@ export async function addComment({
   tickerId: number;
   pathname: string | null;
   parentId?: number;
-  userId?: string;
+  userId: string;
 }): Promise<CommentWithRepliesAndLikesAndUser> {
   try {
-    const userExist = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-
-    if (!userExist) {
-      if (!userId) {
-        throw new Error("User data input incomplete, unable to create User.");
-      }
-      const clerk = await clerkClient();
-
-      const userClerk = await clerk.users.getUser(userId);
-
-      await createUser({
-        id: userId,
-        name: userClerk.fullName || "",
-        avatarSrc: userClerk.imageUrl,
-      });
-    }
+    await isUserExist(userId);
 
     const response = await createComment({
       content,

@@ -156,7 +156,8 @@ export default function Chart({
             onClick={handleLikeTicker}
             className={cn(
               "gap-1 ",
-              optimisticUserLiked && "text-red-500 hover:text-red-500"
+              optimisticUserLiked && "text-red-500 hover:text-red-500",
+              "text-xs gap-1"
             )}
           >
             <HeartIcon
@@ -168,6 +169,7 @@ export default function Chart({
             variant={"ghost"}
             size={"icon"}
             onClick={() => setIsOpen(true)}
+            className="text-xs gap-1"
           >
             <MessageCircleIcon />
             {comments > 0 && <span>{comments}</span>}

@@ -6,6 +6,7 @@ import {
   Comment as PrismaComment,
 } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { isUserExist } from "./user";
 
 export type CommentWithUser = Prisma.CommentGetPayload<{
   include: { user: true };
@@ -70,6 +71,8 @@ export async function likeComment(
   userId: string,
   pathname: string | null
 ) {
+  await isUserExist(userId);
+
   await prisma.commentLike.create({
     data: {
       comment: { connect: { id: commentId } },
@@ -110,6 +113,8 @@ export async function removeCommentLike(
   userId: string,
   pathname: string | null
 ) {
+  await isUserExist(userId);
+
   await prisma.commentLike.delete({
     where: { commentId_userId: { commentId, userId } },
   });

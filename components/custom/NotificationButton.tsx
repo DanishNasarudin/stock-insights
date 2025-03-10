@@ -16,8 +16,8 @@ export default function NotificationButton({
         <Button variant={"outline"} size={"icon"} className="relative">
           <BellIcon />
           {notifications > 0 && (
-            <div className="absolute top-0 right-0 w-4 h-4 translate-x-[50%] translate-y-[-50%] rounded-full bg-red-500 text-white text-xs pointer-events-none select-none">
-              {notifications}
+            <div className="absolute top-0 right-0 w-4 h-4 p-[2px] pt-[2.5px] translate-x-[50%] translate-y-[-50%] rounded-full bg-red-500 text-white text-[10px] font-bold leading-none pointer-events-none select-none">
+              {notifications > 99 ? "99+" : notifications}
             </div>
           )}
         </Button>

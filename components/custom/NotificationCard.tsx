@@ -73,7 +73,7 @@ export default function NotificationCard({
         >
           {optimisticIsRead ? "Mark as Unread" : "Mark as Read"}
           {!optimisticIsRead && (
-            <DotIcon className="absolute !h-20 !w-20 top-0 right-0 translate-x-[50%] translate-y-[-50%] stroke-red-500 fill-red-500" />
+            <DotIcon className="absolute !h-16 !w-16 top-0 right-0 translate-x-[50%] translate-y-[-50%] stroke-red-500 fill-red-500" />
           )}
         </Button>
         <Link href={`/ticker/${comment.tickerId}/comment/${comment.id}`}>

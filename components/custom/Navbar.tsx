@@ -34,7 +34,7 @@ export default async function Navbar() {
           <span className="text-lg font-black text-white">EasyDivMy</span>
         </Button>
       </Link>
-      <div className="flex align-middle gap-4">
+      <div className="flex align-middle gap-2">
         <SignInButton />
         {userId && <NotificationButton notifications={notifications} />}
         <ThemeButton />

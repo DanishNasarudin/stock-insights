@@ -1,7 +1,7 @@
 "use client";
+import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { Toaster } from "sonner";
 import { SocketProvider } from "./socket-provider";
 import { ThemeProvider } from "./theme-provider";
 

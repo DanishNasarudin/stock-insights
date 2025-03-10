@@ -18,7 +18,7 @@ export default function Inputs() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const setSearchParams = new URLSearchParams(searchParams);
+  const setSearchParams = new URLSearchParams(searchParams || undefined);
 
   useEffect(() => {
     if (searchValues) {
