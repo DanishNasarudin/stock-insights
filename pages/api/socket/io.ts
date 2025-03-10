@@ -30,7 +30,7 @@ const ioHandler = (req: NextApiRequest, res: NextAPIResponseServerIo) => {
       cors: {
         origin:
           process.env.NODE_ENV === "production"
-            ? "https://easydivmy.vercel.app"
+            ? process.env.HOSTNAME || "https://easydivmy.danishnasarudin.com"
             : "http://localhost:3000",
         methods: ["GET", "POST"],
         credentials: true,
