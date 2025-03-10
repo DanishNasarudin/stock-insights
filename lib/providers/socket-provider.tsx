@@ -39,7 +39,7 @@ export const useSocket = () => {
 const hostname =
   process.env.NODE_ENV !== "production"
     ? "http://localhost:3000"
-    : "https://app.idealtech.com.my";
+    : process.env.HOSTNAME || "https://easydivmy.danishnasarudin.com";
 
 // const hostname = "http://localhost:3000";
 
