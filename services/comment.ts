@@ -68,7 +68,7 @@ export async function deleteComment(id: number): Promise<PrismaComment> {
 export async function likeComment(
   commentId: number,
   userId: string,
-  pathname: string
+  pathname: string | null
 ) {
   await prisma.commentLike.create({
     data: {
@@ -88,7 +88,7 @@ export async function likeComment(
     },
   });
 
-  revalidatePath(pathname);
+  revalidatePath(pathname || "/");
 
   return totalLikes;
 }
@@ -108,7 +108,7 @@ export async function dislikeComment(
 export async function removeCommentLike(
   commentId: number,
   userId: string,
-  pathname: string
+  pathname: string | null
 ) {
   await prisma.commentLike.delete({
     where: { commentId_userId: { commentId, userId } },
@@ -125,7 +125,7 @@ export async function removeCommentLike(
     },
   });
 
-  revalidatePath(pathname);
+  revalidatePath(pathname || "/");
 
   return totalLikes;
 }

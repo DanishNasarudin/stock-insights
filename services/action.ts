@@ -19,7 +19,7 @@ export async function addComment({
 }: {
   content: string;
   tickerId: number;
-  pathname: string;
+  pathname: string | null;
   parentId?: number;
   userId?: string;
 }): Promise<CommentWithRepliesAndLikesAndUser> {
@@ -65,7 +65,7 @@ export async function addComment({
       }
     }
 
-    revalidatePath(pathname);
+    revalidatePath(pathname || "/");
 
     return response;
   } catch (error: any) {

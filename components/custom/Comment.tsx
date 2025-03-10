@@ -104,12 +104,13 @@ function PureComment({
     }
   }, [openComment]);
 
-  const initials =
-    data.user?.name
-      .split(/\s+/)
-      .filter((word) => word.length > 0)
-      .map((word) => word[0].toUpperCase())
-      .join("") || "G";
+  const initials = data.user?.name
+    ? data.user?.name
+        .split(/\s+/)
+        .filter((word) => word.length > 0)
+        .map((word) => word[0].toUpperCase())
+        .join("")
+    : "G";
 
   return (
     <div className="flex gap-2 py-2">

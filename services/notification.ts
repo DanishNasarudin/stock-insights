@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { Notification, Prisma } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 export async function createNotification({
   userId,
@@ -56,7 +56,7 @@ export async function setNotificationRead({
 }: {
   id: number;
   isRead: boolean;
-  pathname: string;
+  pathname: string | null;
 }): Promise<Notification> {
   const response = await prisma.notification.update({
     where: {
@@ -67,7 +67,7 @@ export async function setNotificationRead({
     },
   });
 
-  revalidatePath(pathname);
+  revalidatePath(pathname || "/");
 
   return response;
 }
@@ -90,4 +90,16 @@ export async function getNotificationUnreadByUser({
   });
 
   return unreadNotifications;
+}
+
+export const getNotificationUnreadByUserCached = unstable_cache(
+  async ({ userId }: { userId: string }) =>
+    getNotificationUnreadByUser({ userId }),
+  ["notification_unread"],
+  { tags: ["notification_unread"], revalidate: 60 }
+);
+
+export async function getNotificationUnreadRevalidate() {
+  console.log("PASSED");
+  revalidateTag("notification_unread");
 }

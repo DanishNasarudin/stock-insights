@@ -9,11 +9,12 @@ type CommentStore = {
   initComment: (comments: CommentWithRepliesAndLikesAndUser[]) => void;
   createComment: (data: {
     content: string;
-    pathname: string;
+    pathname: string | null;
     tickerId: number;
     parentId?: number;
     userId?: string;
   }) => void;
+  commentUpdateStatus: "latest" | "updating" | "success";
 };
 
 export const useCommentStore = create<CommentStore>()((set, get) => ({
@@ -21,6 +22,7 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
   initComment: (comments) =>
     set({
       comments,
+      commentUpdateStatus: "latest",
     }),
   createComment: async ({ content, tickerId, userId, parentId, pathname }) => {
     const currentComments = get().comments;
@@ -43,7 +45,7 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
       ...currentComments,
     ];
 
-    set({ comments: newComments });
+    set({ comments: newComments, commentUpdateStatus: "updating" });
 
     try {
       const response = await addComment({
@@ -54,14 +56,13 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         userId,
       });
       set({
-        comments: [
-          { ...response, user: {} as User, commentLikes: [], replies: [] },
-          ...currentComments,
-        ],
+        comments: [{ ...response }, ...currentComments],
+        commentUpdateStatus: "success",
       });
     } catch (error: any) {
       toast.error(`Failed to add comment, Error: ${error.message}`);
       set({ comments: currentComments });
     }
   },
+  commentUpdateStatus: "latest",
 }));

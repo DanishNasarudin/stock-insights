@@ -115,7 +115,7 @@ export async function deleteTicker(id: number): Promise<Ticker> {
 export async function likeTicker(
   tickerId: number,
   userId: string,
-  pathname: string
+  pathname: string | null
 ) {
   const response = await prisma.tickerLike.create({
     data: {
@@ -124,7 +124,7 @@ export async function likeTicker(
     },
   });
 
-  revalidatePath(pathname);
+  revalidatePath(pathname || "/");
 
   return response;
 }
@@ -144,13 +144,13 @@ export async function dislikeTicker(
 export async function removeTickerLike(
   tickerId: number,
   userId: string,
-  pathname: string
+  pathname: string | null
 ) {
   const response = await prisma.tickerLike.delete({
     where: { tickerId_userId: { tickerId, userId } },
   });
 
-  revalidatePath(pathname);
+  revalidatePath(pathname || "/");
 
   return response;
 }

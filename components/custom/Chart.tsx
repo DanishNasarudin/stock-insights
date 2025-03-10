@@ -113,7 +113,9 @@ export default function Chart({
       )}
     >
       <div className="flex justify-between">
-        <span className="text-lg">{label}</span>
+        <span className="text-lg text-nowrap text-ellipsis overflow-clip max-w-[240px] w-full">
+          {label}
+        </span>
         {!oneDisplay && (
           <ChartDialog
             isOpen={isOpen}
@@ -176,7 +178,7 @@ export default function Chart({
           {shares > 0 && <span>{shares}</span>}
         </Button>
       </div>
-      <LoginDialog open={open} onOpenChange={setOpen} />
+      {open && <LoginDialog open={open} onOpenChange={setOpen} />}
     </div>
   );
 }

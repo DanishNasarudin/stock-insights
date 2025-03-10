@@ -1,11 +1,13 @@
 "use client";
+import { useSocket } from "@/lib/providers/socket-provider";
 import { cn } from "@/lib/utils";
 import { useCommentStore } from "@/lib/zustand";
+import { getCommentById } from "@/services/comment";
 import { useClerk } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowUpIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -39,11 +41,15 @@ export default function CommentForm({
 }) {
   const pathname = usePathname();
   const { user } = useClerk();
+  const { socket } = useSocket();
 
   const [open, setOpen] = useState(false);
 
   const createComment = useCommentStore(
     useShallow((state) => state.createComment)
+  );
+  const commentUpdateStatus = useCommentStore(
+    useShallow((state) => state.commentUpdateStatus)
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,6 +80,22 @@ export default function CommentForm({
     form.reset();
     // console.log(pathname, values, user?.id);
   }
+
+  useEffect(() => {
+    if (socket === null || commentUpdateStatus !== "success") return;
+
+    const sendNotification = async () => {
+      if (parentId) {
+        const receiver = await getCommentById(parentId);
+
+        socket.emit("revalidate-notification", {
+          receiverId: receiver?.userId,
+        });
+      }
+    };
+
+    sendNotification();
+  }, [socket, commentUpdateStatus]);
 
   const initials = user?.fullName
     ? user?.fullName

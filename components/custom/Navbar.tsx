@@ -1,5 +1,5 @@
 import icon from "@/public/logo.png";
-import { getNotificationUnreadByUser } from "@/services/notification";
+import { getNotificationUnreadByUserCached } from "@/services/notification";
 import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +14,7 @@ export default async function Navbar() {
   let notifications: number = 0;
 
   if (userId) {
-    notifications = await getNotificationUnreadByUser({ userId });
+    notifications = await getNotificationUnreadByUserCached({ userId });
   }
 
   return (

@@ -5,7 +5,7 @@ import { Comment } from "@prisma/client";
 import { DotIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useOptimistic } from "react";
+import { useOptimistic, useTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 
@@ -34,9 +34,13 @@ export default function NotificationCard({
     (_, newIsRead: boolean) => newIsRead
   );
 
+  const [_, startTransition] = useTransition();
+
   const setIsRead = async (isReadNew: boolean) => {
     if (isReadNew !== isRead) {
-      setOptimisticIsRead(!optimisticIsRead);
+      startTransition(() => {
+        setOptimisticIsRead(!optimisticIsRead);
+      });
       await setNotificationRead({ id, isRead: isReadNew, pathname });
     }
   };
