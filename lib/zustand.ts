@@ -1,6 +1,6 @@
 import { addComment } from "@/services/action";
 import { CommentWithRepliesAndLikesAndUser } from "@/services/comment";
-import { User } from "@prisma/client";
+import { User } from "@clerk/nextjs/server";
 import { toast } from "sonner";
 import { create } from "zustand";
 
@@ -12,7 +12,7 @@ type CommentStore = {
     pathname: string | null;
     tickerId: number;
     parentId?: number;
-    userId?: string;
+    user: User;
   }) => void;
   commentUpdateStatus: "latest" | "updating" | "success";
 };
@@ -24,7 +24,7 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
       comments,
       commentUpdateStatus: "latest",
     }),
-  createComment: async ({ content, tickerId, userId, parentId, pathname }) => {
+  createComment: async ({ content, tickerId, user, parentId, pathname }) => {
     const currentComments = get().comments;
 
     const newComments: CommentWithRepliesAndLikesAndUser[] = [
@@ -33,12 +33,18 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         content,
         likes: 0,
         dislikes: 0,
-        userId: userId || null,
+        userId: user.id || null,
         tickerId,
         parentId: parentId || null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        user: {} as User,
+        user: {
+          name: user.fullName || "Guest",
+          id: user.id,
+          avatarSrc: user.imageUrl,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         commentLikes: [],
         replies: [],
       },
@@ -53,7 +59,7 @@ export const useCommentStore = create<CommentStore>()((set, get) => ({
         tickerId,
         pathname,
         parentId,
-        userId,
+        userId: user.id,
       });
       set({
         comments: [{ ...response }, ...currentComments],

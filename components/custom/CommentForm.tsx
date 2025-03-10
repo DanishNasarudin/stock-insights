@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useCommentStore } from "@/lib/zustand";
 import { getCommentById } from "@/services/comment";
 import { useClerk } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowUpIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -74,7 +75,7 @@ export default function CommentForm({
       tickerId,
       pathname,
       parentId,
-      userId: user.id,
+      user: user as unknown as User,
     });
 
     form.reset();
