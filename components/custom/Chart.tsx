@@ -16,10 +16,13 @@ import { HeartIcon, MessageCircleIcon, SendIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { toast } from "sonner";
+import { useCopyToClipboard } from "usehooks-ts";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import ChartDialog from "./ChartDialog";
 import LoginDialog from "./LoginDialog";
+import TooltipWrapper from "./TooltipWrapper";
 
 export default function Chart({
   data = {} as TickerDataType,
@@ -102,6 +105,9 @@ export default function Chart({
     }
   };
 
+  const [copiedText, copy] = useCopyToClipboard();
+  const origin = window.location.origin;
+
   // console.log(randomTailwindHexColor(), "CHECK");
   if (values.length === 0) return <></>;
   return (
@@ -165,20 +171,34 @@ export default function Chart({
             />
             {optimisticLikes > 0 && <span>{optimisticLikes}</span>}
           </Button>
+          <TooltipWrapper content="Comment">
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={() => setIsOpen(true)}
+              className={cn(
+                "text-xs gap-1",
+                oneDisplay && "pointer-events-none"
+              )}
+            >
+              <MessageCircleIcon />
+              {comments > 0 && <span>{comments}</span>}
+            </Button>
+          </TooltipWrapper>
+        </div>
+        <TooltipWrapper content="Share">
           <Button
             variant={"ghost"}
             size={"icon"}
-            onClick={() => setIsOpen(true)}
-            className={cn("text-xs gap-1", oneDisplay && "pointer-events-none")}
+            onClick={() => {
+              copy(`${origin}/ticker/${id}`);
+              toast.success("Link copied!");
+            }}
           >
-            <MessageCircleIcon />
-            {comments > 0 && <span>{comments}</span>}
+            <SendIcon />
+            {shares > 0 && <span>{shares}</span>}
           </Button>
-        </div>
-        <Button variant={"ghost"} size={"icon"}>
-          <SendIcon />
-          {shares > 0 && <span>{shares}</span>}
-        </Button>
+        </TooltipWrapper>
       </div>
       {open && <LoginDialog open={open} onOpenChange={setOpen} />}
     </div>

@@ -19,6 +19,7 @@ import { Button } from "../ui/button";
 import CommentForm from "./CommentForm";
 import { CommentNode } from "./Comments";
 import LoginDialog from "./LoginDialog";
+import TooltipWrapper from "./TooltipWrapper";
 
 type PureComment = {
   data: CommentNode;
@@ -126,7 +127,7 @@ function PureComment({
           <p className="leading-none text-muted-foreground/50">{time}</p>
         </div>
         <p className="whitespace-pre-wrap">{data.content}</p>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <Button
             variant={"ghost"}
             size={"icon"}
@@ -141,15 +142,17 @@ function PureComment({
             />
             {numberOfLikes()}
           </Button>
-          <Button
-            variant={"ghost"}
-            size={"icon"}
-            className="gap-1"
-            onClick={() => setOpenComment(!openComment)}
-          >
-            <MessageCircleIcon />
-            {numberOfComments()}
-          </Button>
+          <TooltipWrapper content="Reply">
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              className="gap-1"
+              onClick={() => setOpenComment(!openComment)}
+            >
+              <MessageCircleIcon />
+              {numberOfComments()}
+            </Button>
+          </TooltipWrapper>
         </div>
         {openComment && (
           <CommentForm

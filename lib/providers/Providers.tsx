@@ -32,7 +32,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
         disableTransitionOnChange
       >
         {children}
-        <Toaster richColors />
+        <Toaster richColors closeButton />
       </ThemeProvider>
       {/* </SocketProvider> */}
     </ClerkProvider>

@@ -21,6 +21,7 @@ import {
 } from "../ui/chart";
 import { Separator } from "../ui/separator";
 import CommentContainter from "./CommentContainter";
+import TooltipWrapper from "./TooltipWrapper";
 
 type ChartDialogType = {
   isOpen: boolean;
@@ -51,13 +52,15 @@ export default function ChartDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant={"outline"} size={"icon"}>
-          <ExpandIcon />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="rounded-lg h-[100svh] md:max-h-[90svh] sm:h-auto overflow-hidden">
-        <div className="w-full space-y-4">
+      <TooltipWrapper content="Expand">
+        <DialogTrigger asChild>
+          <Button variant={"outline"} size={"icon"}>
+            <ExpandIcon />
+          </Button>
+        </DialogTrigger>
+      </TooltipWrapper>
+      <DialogContent className="rounded-lg h-[100svh] md:max-h-[96svh] sm:h-auto overflow-hidden">
+        <div className="w-full h-full space-y-4">
           <DialogHeader>
             <DialogTitle>{label}</DialogTitle>
             <DialogDescription />
