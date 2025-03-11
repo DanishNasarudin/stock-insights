@@ -83,13 +83,10 @@ export async function getSheetData(
   }
 }
 
-export async function syncGoogleSheetTickers(): Promise<{
-  created: number;
-  existing: number;
-}> {
-  const { data, success } = await getSheetData();
+export async function syncGoogleSheetTickers() {
+  const response = await getSheetData();
 
-  if (!success || !data) {
+  if (!response.success || !response.data) {
     throw new Error("Failed to retrieve Google Sheet data");
   }
 
@@ -105,7 +102,7 @@ export async function syncGoogleSheetTickers(): Promise<{
   let existing = 0;
 
   // Iterate over each ticker from the Google Sheet data
-  for (const sheetTicker of data) {
+  for (const sheetTicker of response.data) {
     const tickerLabel = sheetTicker.label;
     // const ticker = tickerLabel.toLowerCase().replace(/[\s_]+/g, "-");
     if (!existingTickerSet.has(tickerLabel)) {
@@ -116,5 +113,5 @@ export async function syncGoogleSheetTickers(): Promise<{
     }
   }
 
-  return { created, existing };
+  return response;
 }

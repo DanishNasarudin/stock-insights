@@ -6,10 +6,11 @@ import { getCommentById } from "@/services/comment";
 import { useClerk } from "@clerk/nextjs";
 import { User } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, MinusCircleIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useLocalStorage, useWindowSize } from "usehooks-ts";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -22,12 +23,16 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
 import LoginDialog from "./LoginDialog";
 
 const formSchema = z.object({
   comment: z.string(),
 });
+
+const isMobile: boolean =
+  typeof navigator !== "undefined" &&
+  /android|iphone|ipad|ipod/i.test(navigator.userAgent);
 
 export default function CommentForm({
   tickerId,
@@ -79,6 +84,7 @@ export default function CommentForm({
     });
 
     form.reset();
+    resetHeight();
     // console.log(pathname, values, user?.id);
   }
 
@@ -106,46 +112,110 @@ export default function CommentForm({
         .join("")
     : "G";
 
+  const [input, setInput] = useState<string>("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { width } = useWindowSize();
+
+  useEffect(() => {
+    if (textareaRef.current && width && width > 768) {
+      textareaRef.current.focus();
+      adjustHeight();
+    }
+  }, [width]);
+
+  const adjustHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${
+        textareaRef.current.scrollHeight + 2
+      }px`;
+    }
+  };
+
+  const resetHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = "37px";
+    }
+  };
+
+  const [localStorageInput, setLocalStorageInput] = useLocalStorage(
+    "input",
+    ""
+  );
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      adjustHeight();
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   setLocalStorageInput(input);
+  // }, [input, setLocalStorageInput]);
+
+  const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // setInput(event.target.value);
+    adjustHeight();
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn(className, "flex w-full gap-2 items-center")}
+        className={cn(className, "flex w-full gap-2 items-center relative")}
       >
+        {setOpenComment && (
+          <Button
+            type="reset"
+            className="flex-shrink-0 text-red-500 hover:text-red-500 absolute left-[-23.5px] top-[47%] translate-x-[-50%] translate-y-[-50%]"
+            variant={"ghost"}
+            size={"icon"}
+            onClick={() => setOpenComment(false)}
+          >
+            <MinusCircleIcon />
+          </Button>
+        )}
         <FormField
           control={form.control}
           name="comment"
           render={({ field }) => (
             <FormItem className="flex w-full gap-2 items-center">
               <FormLabel>
-                <Avatar>
+                <Avatar className="w-8 h-8">
                   <AvatarImage src={user?.imageUrl || undefined} />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </FormLabel>
               <FormControl className="!mt-0">
-                <Input
-                  type="text"
+                <Textarea
+                  rows={1}
+                  draggable={false}
                   placeholder="Comment.."
                   {...field}
-                  className="w-full text-base"
+                  ref={(e) => {
+                    field.ref(e);
+                    textareaRef.current = e;
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    field.onChange(e);
+                    handleInput(e);
+                  }}
+                  className="min-h-[24px] max-h-[calc(12dvh)] w-full text-base resize-none"
+                  onKeyDown={(event) => {
+                    if (!isMobile && event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      if (!form.formState.isLoading) {
+                        form.handleSubmit(onSubmit)();
+                      }
+                    }
+                  }}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {setOpenComment && (
-          <Button
-            type="reset"
-            className="flex-shrink-0"
-            variant={"secondary"}
-            onClick={() => setOpenComment(false)}
-          >
-            Cancel
-          </Button>
-        )}
-
         <Button
           type="submit"
           size={"icon"}

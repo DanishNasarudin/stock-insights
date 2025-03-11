@@ -103,7 +103,7 @@ export default function Comments({
   }
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full h-full">
       {activeNode && (
         <div className="w-full flex items-center pb-4">
           <Link
@@ -142,8 +142,8 @@ export default function Comments({
 
       <div
         className={cn(
-          !disableScroll && "overflow-y-auto",
-          "max-h-[300px] w-full"
+          !disableScroll && "overflow-y-auto max-h-[300px]",
+          "w-full h-full"
         )}
       >
         {displayedTree.map((node) => (
@@ -184,7 +184,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
       />
 
       {expanded && hasChildren && depth < 2 && (
-        <div className="ml-12 mt-2">
+        <div className="ml-10 mt-2">
           {node.children.map((child) => (
             <CommentItem key={child.id} node={child} depth={depth + 1} />
           ))}

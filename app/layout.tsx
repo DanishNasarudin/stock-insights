@@ -1,6 +1,7 @@
 import Navbar from "@/components/custom/Navbar";
 import Providers from "@/lib/providers/Providers";
 import icon from "@/public/logo.png";
+import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -42,18 +43,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { userId } = await auth();
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col`}
       >
         <Providers>
-          <Navbar />
+          <Navbar userId={userId} />
           <main className="flex-1">{children}</main>
           <section className="h-[30%] flex-none"></section>
           <footer className="min-h-min w-full flex justify-center py-1 bg-background border-t-border border-t-[1px] text-xs text-secondary-foreground/60">

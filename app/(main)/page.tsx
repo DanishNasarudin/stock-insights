@@ -6,7 +6,6 @@ import { formatDateTime } from "@/lib/utils";
 import { CommentWithRepliesAndLikesAndUser } from "@/services/comment";
 import {
   DividendDataType,
-  getSheetData,
   SheetDataType,
   syncGoogleSheetTickers,
 } from "@/services/google-sheet";
@@ -41,8 +40,7 @@ export default async function Home({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { search } = await searchParams;
-  const { data, success, updatedAt } = await getSheetData();
-  await syncGoogleSheetTickers();
+  const { data, success, updatedAt } = await syncGoogleSheetTickers();
 
   const searchTerm = Array.isArray(search) ? search[0] : search;
 

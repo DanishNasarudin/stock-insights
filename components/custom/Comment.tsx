@@ -115,17 +115,17 @@ function PureComment({
   return (
     <div className="flex gap-2 py-2">
       <div className="flex flex-col items-center">
-        <Avatar>
+        <Avatar className="w-8 h-8">
           <AvatarImage src={data.user?.avatarSrc || undefined} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </div>
-      <div className="flex flex-col gap-1 w-full">
+      <div className="flex flex-col gap-1 w-full text-sm">
         <div className="flex gap-2">
           <p className="font-bold leading-none">{data.user?.name}</p>
           <p className="leading-none text-muted-foreground/50">{time}</p>
         </div>
-        <p>{data.content}</p>
+        <p className="whitespace-pre-wrap">{data.content}</p>
         <div className="flex gap-4">
           <Button
             variant={"ghost"}
@@ -184,7 +184,7 @@ function PureComment({
           </Link>
         )}
       </div>
-      <LoginDialog open={open} onOpenChange={setOpen} />
+      {open && <LoginDialog open={open} onOpenChange={setOpen} />}
     </div>
   );
 }

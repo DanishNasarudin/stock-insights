@@ -169,7 +169,7 @@ export default function Chart({
             variant={"ghost"}
             size={"icon"}
             onClick={() => setIsOpen(true)}
-            className="text-xs gap-1"
+            className={cn("text-xs gap-1", oneDisplay && "pointer-events-none")}
           >
             <MessageCircleIcon />
             {comments > 0 && <span>{comments}</span>}

@@ -32,7 +32,7 @@ export default function CommentContainter({ form, comments }: Props) {
   }, [comments?.comments, zusComments]);
 
   return (
-    <div className="flex flex-col w-full gap-4">
+    <div className="flex flex-col w-full h-full gap-4">
       <CommentForm {...form} />
       <Comments {...comments} comments={commentsMemo} />
     </div>

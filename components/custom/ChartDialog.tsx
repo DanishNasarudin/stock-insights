@@ -56,35 +56,36 @@ export default function ChartDialog({
           <ExpandIcon />
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-lg">
-        <DialogHeader>
-          <DialogTitle>{label}</DialogTitle>
-          <DialogDescription />
-        </DialogHeader>
-        <Separator />
-        <ChartContainer
-          config={chartConfig}
-          className="min-h-[100px] w-full mt-4"
-        >
-          <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="year"
-              tickLine={true}
-              tickMargin={10}
-              axisLine={false}
-            />
-            <YAxis tickLine={false} axisLine={false} label={"%"} />
-            <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="dividend" radius={4} fill="var(--color-dividend)" />
-          </BarChart>
-        </ChartContainer>
-        <Separator />
-        <CommentContainter
-          form={{ tickerId: id }}
-          comments={{ comments: commentArray }}
-        />
+      <DialogContent className="rounded-lg h-[100svh] md:max-h-[90svh] sm:h-auto overflow-hidden">
+        <div className="w-full space-y-4">
+          <DialogHeader>
+            <DialogTitle>{label}</DialogTitle>
+            <DialogDescription />
+          </DialogHeader>
+          <Separator />
+          <ChartContainer config={chartConfig} className="w-full mt-4">
+            <BarChart accessibilityLayer data={values} margin={{ left: -24 }}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="year"
+                tickLine={true}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <YAxis tickLine={false} axisLine={false} label={"%"} />
+              <ChartTooltip
+                content={<ChartTooltipContent indicator="line" />}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar dataKey="dividend" radius={4} fill="var(--color-dividend)" />
+            </BarChart>
+          </ChartContainer>
+          <Separator />
+          <CommentContainter
+            form={{ tickerId: id }}
+            comments={{ comments: commentArray }}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
